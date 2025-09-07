@@ -25,4 +25,8 @@ public interface OrderRepo extends JpaRepository<Order, Long>, JpaSpecificationE
 
     @Query("SELECT COUNT(o) FROM Order o where o.user.id = :userId")
     Long countByUser(Long userId);
+
+    List<Order> findByStatus(OrderStatus status);
+    
+    List<Order> findByStatusIn(List<OrderStatus> statuses);
 }

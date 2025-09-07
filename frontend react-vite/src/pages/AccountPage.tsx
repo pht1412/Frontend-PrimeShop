@@ -111,13 +111,30 @@ const AccountPage = () => {
   };
 
   const handleReceiveOrder = async (orderId: string) => {
-    try {
-      await api.put(`/order/update-status?id=${orderId}&status=DELIVERED`);
-      fetchOrders();
-    } catch (error) {
-      console.error('Error receiving order:', error);
-    }
-  };
+  try {
+    // Cập nhật trạng thái đơn hàng thành DELIVERED
+    await api.put(`/order/update-status?id=${orderId}&status=DELIVERED`);
+
+    // Nếu backend không tự chuyển sang COMPLETED, bạn có thể bổ sung gọi API trạng thái này
+    // Ví dụ:
+    await api.put(`/order/update-status?id=${orderId}&status=COMPLETED`);
+
+    // Cập nhật lại danh sách đơn
+    await fetchOrders();
+
+    // Hiển thị thông báo thành công
+    Swal.fire({
+      icon: 'success',
+      title: 'Xác nhận nhận hàng',
+      text: 'Bạn đã nhận hàng thành công và đơn hàng đã được hoàn tất!',
+      confirmButtonText: 'OK',
+    });
+  } catch (error) {
+    console.error('Error receiving order:', error);
+    toast.error('Có lỗi xảy ra khi xác nhận nhận hàng!');
+  }
+};
+
 
   return (
     <section className="account-page">

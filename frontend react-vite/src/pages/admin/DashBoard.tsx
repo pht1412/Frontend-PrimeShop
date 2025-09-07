@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api/api";
 import "../../pages/admin/admin.css"
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const DashBoard = () => {
   const [productCount, setProductCount] = useState<number | null>(null);
@@ -11,32 +12,66 @@ const DashBoard = () => {
   const [categoryCount, setCategoryCount] = useState<number | null>(null);
   const [voucherCount, setVoucherCount] = useState<number | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const getTotalProductsCount = async () => {
-    const response = await api.get('/product/count');
-    setProductCount(response.data);
+    try {
+      const response = await api.get('/product/count');
+      setProductCount(response.data);
+    } catch (error) {
+      console.error('Error fetching product count:', error);
+      setProductCount(0);
+    }
   }
   
   const getTotalOrdersCount = async () => {
-    const response = await api.get('/order/count');
-    setOrderCount(response.data);
+    try {
+      const response = await api.get('/order/count');
+      setOrderCount(response.data);
+    } catch (error) {
+      console.error('Error fetching order count:', error);
+      setOrderCount(0);
+    }
   }
 
   const getTotalUsersCount = async () => {
-    const response = await api.get('/auth/count');
-    setUserCount(response.data);
+    try {
+      const response = await api.get('/auth/count');
+      setUserCount(response.data);
+    } catch (error) {
+      console.error('Error fetching user count:', error);
+      setUserCount(0);
+    }
   }
+  
   const getTotalNewsCount = async () => {
-    const response = await api.get('/news/count');
-    setNewsCount(response.data.count);
+    try {
+      const response = await api.get('/news/count');
+      setNewsCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching news count:', error);
+      setNewsCount(0);
+    }
   }
+  
   const getTotalCategoriesCount = async () => {
-    const response = await api.get('/category/count');
-    setCategoryCount(response.data.count);
+    try {
+      const response = await api.get('/category/count');
+      setCategoryCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching category count:', error);
+      setCategoryCount(0);
+    }
   }
+  
   const getTotalVouchersCount = async () => {
-    const response = await api.get('/vouchers/count');
-    setVoucherCount(response.data.count);
+    try {
+      const response = await api.get('/vouchers/count');
+      setVoucherCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching voucher count:', error);
+      setVoucherCount(0);
+    }
   }
 
   useEffect(() => {

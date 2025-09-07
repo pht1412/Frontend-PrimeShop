@@ -5,8 +5,14 @@ public enum OrderStatus {
     CONFIRMED,     // Đã xác nhận, sẵn sàng thanh toán
     PAID,          // Thanh toán thành công
     PROCESSING,    // Đang xử lý
+    INVENTORY,     // Đang kiểm kho
+    READY_TO_SHIP, // Sẵn sàng để giao hàng
+    SHIPPING,      // Đang giao hàng
     SHIPPED,       // Đã giao hàng
     DELIVERED,     // Đã nhận hàng
+    FAILED_DELIVERY, // Giao hàng thất bại
+    RETURNED,     // Đã trả hàng
+    REFUNDED,      // Đã hoàn tiền
     PAYMENT_FAILED, // Thanh toán thất bại
     CANCELLED      // Đã hủy
 }

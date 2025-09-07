@@ -20,7 +20,7 @@ import com.primeshop.user.User;
 import com.primeshop.user.UserRepo;
 import com.primeshop.voucher.Voucher;
 import com.primeshop.voucher.VoucherService;
-
+import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -38,6 +38,11 @@ public class OrderService {
     @Autowired
     private VoucherService voucherService;
 
+    private final OrderRepo orderRepository;
+
+    public OrderService(OrderRepo orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
@@ -204,11 +209,16 @@ public class OrderService {
         switch (currentStatus) {
             case PENDING: return newStatus == OrderStatus.CONFIRMED || newStatus == OrderStatus.CANCELLED;
             case CONFIRMED: return newStatus == OrderStatus.PAID || newStatus == OrderStatus.PAYMENT_FAILED || newStatus == OrderStatus.CANCELLED;
-            case PAID: return newStatus == OrderStatus.SHIPPED;
+            case PAID: return newStatus == OrderStatus.PROCESSING || newStatus == OrderStatus.CANCELLED;
             case PAYMENT_FAILED: return newStatus == OrderStatus.CONFIRMED || newStatus == OrderStatus.CANCELLED;
-            case PROCESSING: return newStatus == OrderStatus.SHIPPED || newStatus == OrderStatus.CANCELLED;
-            case SHIPPED: return newStatus == OrderStatus.DELIVERED;
-            case DELIVERED, CANCELLED: return false;
+            case PROCESSING: return newStatus == OrderStatus.INVENTORY || newStatus == OrderStatus.CANCELLED;
+            case INVENTORY: return newStatus == OrderStatus.READY_TO_SHIP || newStatus == OrderStatus.CANCELLED;
+            case READY_TO_SHIP: return newStatus == OrderStatus.SHIPPING || newStatus == OrderStatus.CANCELLED;
+            case SHIPPING: return newStatus == OrderStatus.SHIPPED || newStatus == OrderStatus.CANCELLED;
+            case SHIPPED: return newStatus == OrderStatus.DELIVERED || newStatus == OrderStatus.CANCELLED;
+            case DELIVERED: return newStatus == OrderStatus.CANCELLED;
+            case CANCELLED: return false;
+            case FAILED_DELIVERY: return false;
             default: throw new IllegalArgumentException("Unknown status: " + currentStatus);
         }
     }
@@ -232,4 +242,28 @@ public class OrderService {
     public Long countByUser(Long userId) {
         return orderRepo.countByUser(userId);
     }
+
+    public boolean updateOrderStatus(Long orderId, String status) {
+    Optional<Order> optionalOrder = orderRepository.findById(orderId);
+    if (optionalOrder.isEmpty()) return false;
+    Order order = optionalOrder.get();
+
+    // Kiểm tra trước khi set
+    order.setStatus(OrderStatus.valueOf(status));
+
+    orderRepository.save(order);
+    return true;
+}
+
+
+    private boolean isValidStatus(String status) {
+        List<String> allowedStatuses = List.of(
+            "READY_TO_SHIP", "PROCESSING", "INVENTORY", "SHIPPING",
+            "SHIPPED", "DELIVERED", "RETURNED", "REFUNDED",
+            "FAILED_DELIVERY", "CANCELLED", "COMPLETED"
+        );
+        return allowedStatuses.contains(status);
+    }
+
+
 }

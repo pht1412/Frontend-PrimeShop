@@ -25,9 +25,11 @@ public class OrderSpecification {
             if (request.getOrderId() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("id"), request.getOrderId()));
             }
-            if (request.getStatus() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), request.getStatus()));
-            }
+            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+                predicates.add(root.get("status").in(request.getStatus()));
+        }
+
+
             if (request.getStartDate() != null && request.getEndDate() != null) {
                 predicates.add(criteriaBuilder.between(root.get("createdAt"), request.getStartDate(), request.getEndDate()));
             }

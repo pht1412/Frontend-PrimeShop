@@ -40,7 +40,17 @@ const LoginPage = () => {
       setLoading(true);
       const res = await api.post("/auth/login", loginData);
       const { token, user } = res.data;
-      login(user, token);
+      
+      // Get cart item count if available
+      let cartItemCount = 0;
+      try {
+        const cartRes = await api.get("/cart/count");
+        cartItemCount = cartRes.data || 0;
+      } catch (cartError) {
+        console.log("Could not fetch cart count:", cartError);
+      }
+      
+      login(user, token, cartItemCount);
       Swal.fire({
         icon: 'success',
         title: 'Đăng nhập thành công!',

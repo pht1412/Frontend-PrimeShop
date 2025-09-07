@@ -145,6 +145,7 @@ const Header = () => {
             <Link to="/login" className="nav-item">Tài khoản</Link>
           )}
           <Link to="/minigame-list" className="nav-item">Mini Game</Link>
+          <Link to="/delivery-dashboard" className="nav-item">Đơn hàng</Link>
         </div>
       </nav>
 
