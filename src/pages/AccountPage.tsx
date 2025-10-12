@@ -7,16 +7,20 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from 'sweetalert2';
 import Button from '@mui/material/Button';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 const AccountPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
     address: ''
   });
+  
   const showOrderDetails = (orders) => {
     Swal.fire({
       title: 'Chi tiết đơn hàng',
@@ -38,6 +42,45 @@ const AccountPage = () => {
       confirmButtonText: 'Đóng'
     });
   }
+
+  const showPaymentMethod = (orders) => {
+  Swal.fire({
+    title: 'Chọn phương thức thanh toán',
+    html: `
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <button id="pay-vnpay" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://images.seeklogo.com/logo-png/42/1/vnpay-logo-png_seeklogo-428006.png" alt="VNPAY" style="height: 32px;" />
+          <span>Thanh toán qua VNPAY</span>
+        </button>
+        <button id="pay-paypal" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" style="height: 32px;" />
+          <span>Thanh toán qua PayPal</span>
+        </button>
+        <button id="pay-momo" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" style="height: 32px;" />
+          <span>Thanh toán qua MoMo</span>
+        </button>
+      </div>
+    `,
+    showConfirmButton: false,
+    showCloseButton: true,
+    didOpen: () => {
+      const orderId = orders.orderId || orders[0]?.orderId; // fallback if orders is array
+      document.getElementById('pay-vnpay')?.addEventListener('click', () => {
+        handleVnPayPayOrder(orderId);
+        Swal.close();
+      });
+      document.getElementById('pay-paypal')?.addEventListener('click', () => {
+        handlePaypalPayOrder(orderId);
+        Swal.close();
+      });
+      document.getElementById('pay-momo')?.addEventListener('click', () => {
+        handleMoMoPayOrder(orderId);
+        Swal.close();
+      });
+    }
+  });
+  };
 
   const fetchUser = async () => {
     const response = await api.get('/auth/me');
@@ -95,19 +138,50 @@ const AccountPage = () => {
     }
   };
 
-  const handlePayOrder = async (orderId: string) => {
+  const handleVnPayPayOrder = async (orderId: string) => {
     try {
-      const response = await api.post("/payment/create", {
+      const response = await api.post("/payment/vnpay/create", {
         orderId: orderId,
         amount: orders.find(order => order.orderId === orderId)?.totalAmount
       });
-      window.location.href = response.data;
+      window.location.href = response.data.paymentUrl;
+      console.log(response.data)
       
     } catch (error) {
       console.error('Error paying order:', error);
       toast.error('Có lỗi xảy ra khi thanh toán đơn hàng!');
     }
   };
+
+  const handlePaypalPayOrder = async (orderId) => {
+    try {
+      const res = await api.post("/payment/paypal/create", { orderId });
+      const { links } = res.data;
+      window.location.href = links[0];
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      } else {
+        console.error(error.message);
+      }
+      toast.error("Có lỗi xảy ra khi thanh toán đơn hàng!");
+    }
+  };
+
+  const handleMoMoPayOrder = async (orderId) => {
+    try {
+      const res = await api.post("/payment/momo/create", { orderId });
+      const { payUrl } = res.data;
+      window.location.href = payUrl;
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      } else {
+        console.error(error.message);
+      }
+      toast.error("Có lỗi xảy ra khi thanh toán đơn hàng!");
+    }
+  }
 
   const handleReceiveOrder = async (orderId: string) => {
     try {
@@ -256,8 +330,9 @@ const AccountPage = () => {
                       })()}
                     </span>
                     {order.orderStatus === 'CONFIRMED' && (
-                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => handlePayOrder(order.orderId)}>Thanh toán</Button>
+                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => showPaymentMethod(order)}>Thanh toán</Button>
                     )}
+
                     <Button variant="contained" color="primary" onClick={() => showOrderDetails(order)}>Xem chi tiết</Button>
                     {order.orderStatus === 'DELIVERED' && (
                       <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => handleReceiveOrder(order.orderId)}>Đã nhận hàng</Button>

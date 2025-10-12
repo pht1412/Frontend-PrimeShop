@@ -7,6 +7,8 @@ import UserManager from "../pages/admin/UserManager";
 import AdminRoute from "../components/AdminRoute";
 import CategoryManager from "../pages/admin/CategoryManager";
 import NewsManager from "../pages/admin/NewsManager";
+import RevenueManager from "../pages/admin/RevenueManager";
+import ImportTransactionManager from "../pages/admin/ImportTransactionManager";
 
 const AdminRoutes = () => {
   return (
@@ -68,6 +70,28 @@ const AdminRoutes = () => {
           <AdminRoute>
             <AdminLayout>
               <NewsManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="revenues"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <RevenueManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="import-transactions"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <ImportTransactionManager />
             </AdminLayout>
           </AdminRoute>
         }

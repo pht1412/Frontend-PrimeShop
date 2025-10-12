@@ -11,6 +11,9 @@ import zaloIcon from '../assets/images//icons/zalo.png';
 // Import icon VNPay
 import vnpayIcon from '../assets/images//icons/vnpay.png';
 
+// Import icon Chatbot
+import chatbotIcon from '../assets/images//icons/chatbot.png';
+
 const Footer = () => {
   return (
     <footer className="footer">

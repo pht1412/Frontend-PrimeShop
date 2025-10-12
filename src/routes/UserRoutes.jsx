@@ -23,6 +23,7 @@ import Footer from "../components/footer";
 import PaymentResult from "../pages/PaymentResult";
 import News from "../pages/news/News";
 import NewsDetail from "../pages/news/NewsDetail";
+import Chatbot from "../chatbot";
 
 const UserRoutes = () => {
   return (
@@ -49,6 +50,7 @@ const UserRoutes = () => {
         <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
       <Footer />
+      <Chatbot />
     </div>
   );
 };
