@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import api from "./api/api";
+import api from "../../api/api";
 import "./assets/css/chatbox.css";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import chatbotIcon from "./assets/images/icons/chatbot.png";

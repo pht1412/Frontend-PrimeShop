@@ -28,6 +28,7 @@ export interface Product {
   stock: number;
   sold: number;
   specs: ProductSpecs[];
+  seller: SellerProfile;
 }
 
 export interface ProductFilter {
@@ -40,4 +41,13 @@ export interface ProductFilter {
 export interface ProductSpecs {
   name: string;
   value: string;
+}
+
+export interface SellerProfile {
+  id: string;
+  shopName: string;
+  identityCard: string;
+  phone: string;
+  description: string;
+  status: String;
 }

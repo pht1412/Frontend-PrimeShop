@@ -487,3 +487,69 @@
     transform: translateY(0);
   }
 }
+
+/* 1. Container cha - Dùng làm điểm neo */
+.chat-menu-container {
+    position: relative; /* Rất quan trọng! */
+}
+
+/* 2. Badge (vòng tròn đỏ) */
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid white; /* Giống Facebook */
+    display: none; /* Mặc định ẩn, chỉ hiện khi có số > 0 */
+}
+
+/* 3. Popup Dropdown */
+.chat-popup {
+    position: absolute;
+    top: 100%; /* Đặt ngay dưới nút icon */
+    right: 0;  /* Căn lề phải với container cha */
+    width: 360px; /* Chiều rộng cố định */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    
+    /* Mặc định ẩn đi */
+    display: none; 
+    /* Hoặc dùng cách hiện đại hơn cho animation:
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease-out;
+    */
+}
+
+/* 4. Lớp (class) 'open' để kích hoạt hiển thị */
+.chat-popup.open {
+    display: block;
+    /* Hoặc:
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    */
+}
+
+/* 5. Cho phép cuộn danh sách tin nhắn */
+.conversation-list {
+    max-height: 400px; /* Giới hạn chiều cao */
+    overflow-y: auto;   /* Thêm thanh cuộn khi cần */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* (Các style khác cho .conversation-item, .avatar... ) */

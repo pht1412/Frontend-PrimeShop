@@ -1,18 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../assets/css/footer.css'; // Đảm bảo file CSS riêng được import
-
-// Import các icon mạng xã hội
+import '../assets/css/footer.css';
 import facebookIcon from '../assets/images//icons/fb.png';
 import instagramIcon from '../assets/images//icons/ins.png';
 import tiktokIcon from '../assets/images//icons/tiktok.png';
 import zaloIcon from '../assets/images//icons/zalo.png';
-
-// Import icon VNPay
 import vnpayIcon from '../assets/images//icons/vnpay.png';
-
-// Import icon Chatbot
-import chatbotIcon from '../assets/images//icons/chatbot.png';
 
 const Footer = () => {
   return (

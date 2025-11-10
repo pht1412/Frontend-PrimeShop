@@ -23,7 +23,8 @@ import Footer from "../components/footer";
 import PaymentResult from "../pages/PaymentResult";
 import News from "../pages/news/News";
 import NewsDetail from "../pages/news/NewsDetail";
-import Chatbot from "../chatbot";
+import Chatbot from "../components/chat/Chatbot";
+import PrimeShopChat from "../components/chat/ChatC2C";
 
 const UserRoutes = () => {
   return (
@@ -50,7 +51,8 @@ const UserRoutes = () => {
         <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
       <Footer />
-      <Chatbot />
+      {/* <Chatbot /> */}
+      <PrimeShopChat />
     </div>
   );
 };

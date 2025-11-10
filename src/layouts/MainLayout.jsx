@@ -14,10 +14,8 @@ import OrderTrackingPages from "../pages/OrderTrackingPage";
 import AccountPage from "../pages/AccountPage";
 import WishList from "../pages/WishListPage";
 import ProductsDetailsPage from "../pages/product/ProductsDetails";
-
 import Header from "../components/header";
 import Footer from "../components/footer";
-import Chatbot from "../chatbot";
 
 const UserRoutes = () => {
   return (
@@ -36,7 +34,6 @@ const UserRoutes = () => {
         <Route path="/order-tracking" element={<OrderTrackingPages />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/wishlist" element={<WishList />} />
-        <Route path="/chatbot" element={<Chatbot />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
