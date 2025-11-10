@@ -8,6 +8,8 @@ import AdminRoute from "../components/AdminRoute";
 import CategoryManager from "../pages/admin/CategoryManager";
 import NewsManager from "../pages/admin/NewsManager";
 import VouchersManager from "../pages/admin/VouchersManager";
+import WalletManager from "../pages/admin/WalletsManager";
+import C2CManagement from "../pages/admin/C2CManagement";
 
 const AdminRoutes = () => {
   return (
@@ -84,6 +86,27 @@ const AdminRoutes = () => {
           </AdminRoute>
         }
       />
+      <Route
+        path="wallets"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <WalletManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="c2c-management"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <C2CManagement />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
     </Routes>
   );
 };

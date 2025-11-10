@@ -312,3 +312,277 @@
     padding: 1rem;
   }
 }
+
+/* =================================================================== */
+/* PRIME WALLET STYLES (Chỉ phần ví)
+/* =================================================================== */
+
+/* ----- Biến màu cục bộ (Bạn có thể thay đổi cho phù hợp) ----- */
+:root {
+  --wallet-primary-color: #007bff; /* Màu xanh dương chủ đạo */
+  --wallet-success-color: #28a745; /* Màu xanh lá (Nạp tiền) */
+  --wallet-danger-color: #dc3545;   /* Màu đỏ (Thanh toán) */
+  --wallet-text-dark: #333;
+  --wallet-text-light: #6c757d;
+  --wallet-card-bg: #ffffff;
+  --wallet-container-bg: #f8f9fa; /* Nền nhẹ cho các container */
+}
+
+/* ----- 1. Trạng thái Loading & Trống ----- */
+.wallet-loading,
+.no-transactions {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--wallet-text-light);
+  background-color: var(--wallet-container-bg);
+  border-radius: 8px;
+}
+
+/* ----- 2. Container Kích hoạt Ví ----- */
+.activate-wallet-container {
+  padding: 40px 30px;
+  background-color: var(--wallet-container-bg);
+  border-radius: 12px;
+  text-align: center;
+  border: 1px dashed var(--wallet-primary-color);
+  max-width: 600px;
+  margin: 20px auto;
+}
+.activate-wallet-container h3 {
+  margin-top: 0;
+  color: var(--wallet-text-dark);
+}
+.activate-wallet-container p {
+  color: var(--wallet-text-light);
+  margin-bottom: 25px;
+}
+/* (Style cho Button của MUI đã có, nhưng có thể thêm transition) */
+.activate-wallet-container .MuiButton-root {
+  transition: all 0.3s ease;
+}
+
+/* ----- 3. Giao diện chính (Dashboard) ----- */
+.wallet-dashboard {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ----- 4. Thẻ Ví (Wallet Card) ----- */
+.wallet-card {
+  background: var(--wallet-card-bg);
+  border-radius: 16px; /* Bo góc nhiều hơn cho cảm giác hiện đại */
+  padding: 25px 30px;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap; /* Cho phép xuống hàng trên mobile */
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #e9ecef;
+}
+
+/* ----- 5. Chi tiết Số dư & Điểm ----- */
+.balance-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.balance-label {
+  font-size: 0.95rem;
+  color: var(--wallet-text-light);
+  font-weight: 500;
+}
+.balance-amount {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--wallet-primary-color);
+  line-height: 1.2;
+}
+.points-display {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--wallet-success-color); /* Dùng màu xanh lá cho điểm */
+}
+
+/* ----- 6. Nút hành động trên Thẻ Ví ----- */
+.wallet-card-actions {
+  display: flex;
+  gap: 15px; /* Khoảng cách giữa các nút */
+}
+/* Tinh chỉnh lại Button của MUI một chút */
+.wallet-card-actions .MuiButton-root {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.wallet-card-actions .MuiButton-containedPrimary {
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+/* ----- 7. Lịch sử giao dịch ----- */
+.transaction-history-container {
+  margin-top: 30px;
+  background-color: var(--wallet-card-bg);
+  border-radius: 12px;
+  padding: 20px 25px;
+  border: 1px solid #e9ecef;
+}
+.transaction-history-container h4 {
+  font-size: 1.25rem;
+  color: var(--wallet-text-dark);
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+.transaction-item:last-child {
+  border-bottom: none;
+}
+.transaction-item:hover {
+  background-color: #fcfcfc; /* Hiệu ứng hover nhẹ */
+}
+
+/* Thông tin (Trái) */
+.tx-info {
+  display: flex;
+  flex-direction: column;
+}
+.tx-description {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--wallet-text-dark);
+}
+.tx-date {
+  font-size: 0.85rem;
+  color: var(--wallet-text-light);
+  margin-top: 3px;
+}
+
+/* Số tiền (Phải) */
+.tx-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap; /* Đảm bảo không bị vỡ dòng */
+  margin-left: 15px;
+}
+.tx-amount.positive {
+  color: var(--wallet-success-color);
+}
+.tx-amount.negative {
+  color: var(--wallet-danger-color);
+}
+
+/* ----- 8. Responsive (Tùy chỉnh cơ bản) ----- */
+@media (max-width: 600px) {
+  .wallet-card {
+    flex-direction: column;
+    align-items: flex-start; /* Căn trái nội dung thẻ */
+   padding: 20px;
+  }
+  .balance-amount {
+    font-size: 1.8rem;
+  }
+  .wallet-card-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 nút trên 1 hàng */
+  }
+
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tx-amount {
+    margin-left: 0;
+    font-size: 1rem;
+  }
+}
+/* Thêm vào /src/assets/css/account.css */
+
+.tab-content > .profile-tab,
+.tab-content > .order-history,
+.tab-content > .voucher-list,
+.tab-content > .wallet-tab {
+  display: none; /* Ẩn tất cả các tab-panel theo mặc định */
+}
+
+.tab-content > .profile-tab.active,
+.tab-content > .order-history.active,
+.tab-content > .voucher-list.active,
+.tab-content > .wallet-tab.active {
+  display: block; /* Chỉ hiển thị tab-panel nào có class .active */
+}
+
+/* =================================================================== */
+/* BỔ SUNG CHO PAYMENT MODAL (SWAL)
+/* =================================================================== */
+
+.payment-modal-info {
+  text-align: left;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+.payment-modal-info p {
+  margin: 5px 0;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.payment-methods-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Khoảng cách giữa các nút */
+  margin: 20px 0;
+}
+
+/* Ghi đè style mặc định của Swal để làm nút to hơn */
+.payment-methods-container .swal2-styled {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 !important; /* Xóa margin mặc định của swal */
+  transition: all 0.2s ease;
+}
+
+/* Nút PrimeWallet (Màu chủ đạo) */
+.btn-payment-wallet {
+  background-color: var(--wallet-primary-color) !important; /* Màu xanh từ CSS cũ */
+  color: white !important;
+}
+.btn-payment-wallet:hover {
+  opacity: 0.9;
+}
+
+/* Nút VNPay */
+.btn-payment-vnpay {
+  background-color: #005A9C !important; /* Màu VNPay */
+  color: white !important;
+}
+
+/* Nút Momo */
+.btn-payment-momo {
+  background-color: #A6246E !important; /* Màu Momo */
+  color: white !important;
+}
+.btn-payment-momo:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -25,6 +25,8 @@ import News from "../pages/news/News";
 import NewsDetail from "../pages/news/NewsDetail";
 import MinigamePage from "../pages/games/MinigamePage";
 import GameListPage from "../pages/games/GameListPage";
+import C2CProduct from "../pages/productC2C/C2CProductPage";
+import C2CProductDetailPage from "../pages/productC2C/C2CProductDetailPage";
 
 const UserRoutes = () => {
   return (
@@ -52,6 +54,8 @@ const UserRoutes = () => {
         <Route path="/minigame-list" element={<GameListPage />} />
         <Route path="/minigame" element={<MinigamePage />} />
         <Route path="/minigame/:gameId" element={<MinigamePage />} />
+        <Route path="/c2c" element={<C2CProduct />} />
+        <Route path="/c2c-product-detail/:id" element={<C2CProductDetailPage />} />
       </Routes>
       <Footer />
     </div>

@@ -526,3 +526,118 @@ tr:hover {
 }
 .active { color: green; font-weight: bold; }
 .inactive { color: #aaa; }
+
+
+/* Vị trí: src/assets/css/admin-c2c-management.css */
+
+.admin-c2c-management-page {
+  width: 90%;
+  max-width: 1000px; /* Admin không cần quá rộng */
+  margin: 2rem auto;
+  font-family: Arial, sans-serif; /* Font "nghiêm túc" */
+}
+
+.admin-c2c-header {
+  padding-bottom: 16px;
+  border-bottom: 2px solid #333;
+}
+.admin-c2c-header h1 {
+  margin: 0;
+}
+.admin-c2c-header p {
+  font-size: 1.1rem;
+  color: #d70018; /* Highlight màu đỏ */
+}
+
+/* Trạng thái Loading / Rỗng */
+.admin-c2c-loading,
+.admin-c2c-empty {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+.admin-c2c-empty h3 {
+  color: #28a745;
+}
+
+/* Danh sách tin */
+.admin-c2c-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-c2c-item {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép responsive */
+  gap: 16px;
+  padding: 16px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  align-items: flex-start;
+}
+
+.admin-c2c-item .item-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.admin-c2c-item .item-info {
+  flex: 1 1 300px; /* Tối thiểu 300px */
+}
+.item-info .item-name {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+}
+.item-info .item-price {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #d70018;
+  margin-bottom: 8px;
+}
+.item-info .item-seller,
+.item-info .item-location {
+  display: block;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.admin-c2c-item .item-description {
+  flex: 1 1 100%; /* Mô tả luôn chiếm 100% (xuống dòng) */
+  background-color: #fdfdfd;
+  border: 1px solid #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+.item-description strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #007bff;
+}
+.item-description p {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap; /* Giữ xuống dòng để admin đọc */
+}
+
+.admin-c2c-item .item-actions {
+  flex: 0 0 150px; /* Cố định 150px cho 2 nút */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: center; /* Căn giữa 2 nút */
+}

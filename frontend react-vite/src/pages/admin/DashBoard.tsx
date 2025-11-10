@@ -130,6 +130,24 @@ const DashBoard = () => {
             <p>Tổng số voucher</p>
           </div>
         </div>
+        {/* Wallet Manager Card */}
+        <div className="card" onClick={() => navigate('/admin/wallets')} style={{ cursor: 'pointer' }}>
+          <span className="card-icon">👛</span>
+          <div className="card-content">
+            <p>Quản lý ví</p>
+            <p>Quản lý các giao dịch ví người dùng</p>
+          </div>
+        </div>
+
+        {/*C2C Manager Card */}
+        <div className="card" onClick={() => navigate('/admin/c2c-management')} style={{ cursor: 'pointer' }}>
+          <span className="card-icon">🏪</span>
+          <div className="card-content">
+            <p>Quản lý C2C</p>
+            <p>Duyệt tin đăng C2C của người dùng</p>
+          </div>
+        </div>
+        
       </div>
     </div>
   );

@@ -54,9 +54,20 @@ const AdminLayout = ({ children }) => {
                   Voucher
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/admin/wallets" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  Ví tiền
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/c2c-management" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  Quản lý C2C
+                </NavLink>
+              </li>
           </ul>
         </nav>
       </aside>
+      
       <div className="admin-content">
         <button
           className="toggle-btn"

@@ -6,6 +6,7 @@ import { mockProducts, mockNews } from "../mocks/mockData";
 import { Product } from "../types/product";
 import api from "../api/api";
 import { News } from "../types/news";
+import C2CFeaturedSection from '../components/productC2C-card/C2CFeaturedSection'; // <--- BỔ SUNG DÒNG NÀY
 
 const HomePage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(2 * 60 * 60); // 2 giờ
@@ -168,6 +169,12 @@ const HomePage: React.FC = () => {
         </Link>
       </section>
 
+
+      {/* Giao diện C2C */}
+      <C2CFeaturedSection />
+
+      
+
       {/* Tin tức sản phẩm công nghệ */}
       <section className="tech-news">
         <h1 className="news-title">📰 Tin tức sản phẩm công nghệ</h1>
@@ -194,6 +201,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+      
 
       {/* Tin tức công nghệ */}
       <section className="general-tech-news">

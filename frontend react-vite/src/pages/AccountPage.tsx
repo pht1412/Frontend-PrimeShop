@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import '../assets/css/account.css'; // Import CSS styles for the component
 import api from '../api/api';
-import { User } from '../types/user';
+import * as walletApi from '../api/wallet.api';
+import { IPaymentRequest } from '../api/wallet.api';
+import axios from 'axios';
+import { User } from '../types/user'; 
 import { Order } from '../types/order';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from 'sweetalert2';
 import Button from '@mui/material/Button';
 import VoucherList from '../components/VoucherList';
+import WalletTab from '../components/WalletTab';
+import C2CTab from '../components/C2CTab'; // Giả định component này sẽ được tạo ở 'src/components/C2CTab.tsx'
+
 
 const AccountPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -18,6 +24,13 @@ const AccountPage = () => {
     phoneNumber: '',
     address: ''
   });
+  const formatCurrency = (amount: number | null | undefined): string => {
+  if (amount === undefined || amount === null) return '0 ₫';
+  return amount.toLocaleString('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  });
+};
   const showOrderDetails = (orders) => {
     Swal.fire({
       title: 'Chi tiết đơn hàng',
@@ -55,10 +68,13 @@ const AccountPage = () => {
     setOrders(response.data);
   };
 
+
   useEffect(() => {
     fetchUser();
     fetchOrders();
   }, []);
+  // BỔ SUNG: useEffect để fetch data C2C (hoàn toàn mới)
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -86,7 +102,7 @@ const AccountPage = () => {
           window.location.reload();
         }
       });
-      fetchUser(); // Refresh user data
+      fetchUser(); 
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error(`Có lỗi xảy ra khi cập nhật thông tin!`, {
@@ -96,7 +112,7 @@ const AccountPage = () => {
     }
   };
 
-  const handlePayOrder = async (orderId: string) => {
+  const handlePayWithVNPay = async (orderId: string) => {
     try {
       const response = await api.post("/payment/create", {
         orderId: orderId,
@@ -109,28 +125,125 @@ const AccountPage = () => {
       toast.error('Có lỗi xảy ra khi thanh toán đơn hàng!');
     }
   };
+  const handlePayWithWallet = async (orderId: string, amount: number) => {
+    if (!user) {
+      toast.error("Không thể xác định người dùng. Vui lòng tải lại trang.");
+      return;
+    }
 
-  const handleReceiveOrder = async (orderId: string) => {
+    try {
+      // Hiển thị loading trong khi gọi API
+      Swal.fire({
+        title: 'Đang thanh toán...',
+        text: 'Vui lòng chờ trong khi Ví Prime xử lý.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Dữ liệu body cho API /pay
+      const paymentData: IPaymentRequest = {
+        orderId: Number(orderId), // Đảm bảo orderId là number
+        amount: amount
+      };
+      
+      // Gọi API ví mà chúng ta đã xây dựng
+      await walletApi.payOrder(Number(user.id), paymentData);
+
+      Swal.close(); // Đóng loading
+      await Swal.fire(
+        'Thành công!',
+        'Đơn hàng đã được thanh toán bằng PrimeWallet.',
+        'success'
+      );
+
+      // Quan trọng: Tải lại danh sách đơn hàng để cập nhật trạng thái
+      fetchOrders();
+      // (Không cần tải lại số dư, vì WalletTab sẽ tự làm khi người dùng click vào)
+
+    } catch (error: any) {
+      console.error('Error paying with PrimeWallet:', error);
+      // Hiển thị lỗi từ back-end (ví dụ: "Không đủ số dư")
+      const errorMessage = error?.response?.data || error.message || 'Ví không đủ số dư hoặc đã xảy ra lỗi.';
+      Swal.fire(
+        'Thanh toán thất bại',
+        String(errorMessage),
+        'error'
+      );
+    }
+  };
+
+
+  // Hàm MỚI để hiển thị Modal lựa chọn
+  const showPaymentModal = (order: Order) => {
+    const orderId = order.orderId;
+    const totalAmount = order.totalAmount;
+
+    const formattedTotalAmount = formatCurrency(totalAmount);
+
+    Swal.fire({
+      title: 'Chọn phương thức thanh toán',
+      html: `
+        <div class="payment-modal-info">
+          <p>Đơn hàng: <strong>#${orderId}</strong></p>
+
+          <p>Tổng tiền: <strong>${formattedTotalAmount}</strong></p> 
+        </div>
+        
+        <div class="payment-methods-container">
+          <button id="pay-wallet" class="swal2-confirm swal2-styled btn-payment-wallet">
+            Thanh toán bằng Ví Prime
+          </button>
+          
+          <button id="pay-vnpay" class="swal2-confirm swal2-styled btn-payment-vnpay">
+            Thanh toán qua VNPay
+          </button>
+          
+          <button id="pay-momo" class="swal2-confirm swal2-styled btn-payment-momo" disabled>
+            Thanh toán qua Momo (Sắp ra mắt)
+          </button>
+        </div>
+      `,
+      showConfirmButton: false, // Ẩn nút "OK" mặc định
+      showCancelButton: true,
+      cancelButtonText: 'Huỷ bỏ',
+      
+      didOpen: () => {
+        const modal = Swal.getHtmlContainer();
+        
+        modal?.querySelector('#pay-wallet')?.addEventListener('click', () => {
+          handlePayWithWallet(orderId, totalAmount);
+        });
+
+        modal?.querySelector('#pay-vnpay')?.addEventListener('click', () => {
+          handlePayWithVNPay(orderId, totalAmount);
+        });
+      }
+    });
+  };
+
+const handleReceiveOrder = async (orderId: string) => {
   try {
-    // Cập nhật trạng thái đơn hàng thành DELIVERED
-    await api.put(`/order/update-status?id=${orderId}&status=DELIVERED`);
+    // 1. Gọi API để cập nhật trạng thái thành DONE
+    await api.put(`/order/update-status?id=${orderId}&status=DONE`);
 
-    // Nếu backend không tự chuyển sang COMPLETED, bạn có thể bổ sung gọi API trạng thái này
-    // Ví dụ:
-    await api.put(`/order/update-status?id=${orderId}&status=COMPLETED`);
+    // 2. Tải lại danh sách đơn hàng
+    // Đơn hàng này bây giờ là DONE, không còn là DELIVERED
+    await fetchOrders(); 
+    // Khi React render lại, điều kiện {order.status === 'DELIVERED'} sẽ là FALSE
+    // => Nút "Đã nhận hàng" sẽ tự động biến mất.
 
-    // Cập nhật lại danh sách đơn
-    await fetchOrders();
-
-    // Hiển thị thông báo thành công
+    // 3. Thông báo thành công
     Swal.fire({
       icon: 'success',
-      title: 'Xác nhận nhận hàng',
-      text: 'Bạn đã nhận hàng thành công và đơn hàng đã được hoàn tất!',
+      title: 'Đã nhận hàng!',
+      text: 'Đơn hàng đã được hoàn tất. Cảm ơn bạn đã mua sắm!',
       confirmButtonText: 'OK',
     });
+
   } catch (error) {
-    console.error('Error receiving order:', error);
+    console.error('Error receiving order (setting to DONE):', error);
     toast.error('Có lỗi xảy ra khi xác nhận nhận hàng!');
   }
 };
@@ -172,14 +285,31 @@ const AccountPage = () => {
           >
             Mã khuyến mãi
           </button>
+          <button
+              className={`tab-item ${activeTab === 'wallet' ? 'active' : ''}`} // <-- Sửa dòng này
+              onClick={() => setActiveTab('wallet')} // <-- Sửa dòng này
+              role="tab"
+              aria-selected={activeTab === 'wallet'}
+          >
+              Ví tiền
+          </button>
+          <button
+              className={`tab-item ${activeTab === 'c2c' ? 'active' : ''}`} // <-- Sửa dòng này
+              onClick={() => setActiveTab('c2c')} // <-- Sửa dòng này
+              role="tab"
+              aria-selected={activeTab === 'c2c'}
+          >
+              Giao dịch C2C
+          </button>
         </div>
 
         {/* Tab Content */}
         <ToastContainer />
         <div className="tab-content shadow rounded">
           {/* Thông tin cá nhân */}
-          <div className={`profile-tab ${activeTab === 'profile' ? 'active' : ''}`}>
-            <h3 className="mb-3">Thông tin cá nhân</h3>
+        {activeTab === 'profile' && (
+        <div className="profile-tab active">
+          <h3 className="mb-3">Thông tin cá nhân</h3>
             <form className="profile-form" onSubmit={handleUpdateProfile}>              
               <div className="form-group">
                 <label htmlFor="username">Tên tài khoản</label>
@@ -236,9 +366,11 @@ const AccountPage = () => {
               </button>
             </form>
           </div>
+        )}
 
           {/* Lịch sử giao dịch */}
-          <div className={`order-history ${activeTab === 'orders' ? 'active' : ''}`}>
+            {activeTab === 'orders' && (
+            <div className="order-history active">            
             <h3 className="mb-3">Danh sách đơn hàng</h3>
             {orders?.length > 0 ? (
               <div className="order-list">
@@ -280,7 +412,7 @@ const AccountPage = () => {
                       })()}
                     </span>
                     {order.orderStatus === 'CONFIRMED' && (
-                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => handlePayOrder(order.orderId)}>Thanh toán</Button>
+                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => showPaymentModal(order)}>Thanh toán</Button>
                     )}
                     <Button variant="contained" color="primary" onClick={() => showOrderDetails(order)}>Xem chi tiết</Button>
                     {order.orderStatus === 'DELIVERED' && (
@@ -293,12 +425,30 @@ const AccountPage = () => {
               <p className="no-orders">Bạn chưa có giao dịch nào.</p>
             )}
           </div>
+          )}
 
           {/* Danh sách mã khuyến mãi */}
-          <div className={`voucher-list ${activeTab === 'vouchers' ? 'active' : ''}`}>
+          {activeTab === 'vouchers' && (
+            <div className="voucher-list active">            
             <h3 className="mb-3">Danh sách mã khuyến mãi</h3>
             <VoucherList showAllVouchers={true} />
           </div>
+          )}
+
+          {/* Ví tiền */}
+          {activeTab === 'wallet' && (
+            <div className="wallet-tab active">                
+            <WalletTab user={user} />
+            </div>
+          )}
+
+{/* C2C */}
+  {activeTab === 'c2c' && (
+    <div className="c2c-tab active">
+      <C2CTab user={user} />
+    </div>
+  )}
+
         </div>
       </div>
     </section>
