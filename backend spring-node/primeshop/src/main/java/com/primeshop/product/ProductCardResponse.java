@@ -1,17 +1,14 @@
 package com.primeshop.product;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.primeshop.utils.CodeUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ProductResponse {
+public class ProductCardResponse {
     private Long id;
-    private String code;
+    // private String code;
     private String name;
     private String slug;
     private String brand;
@@ -21,16 +18,14 @@ public class ProductResponse {
     private Boolean isDiscounted;
     private Double rating;
     private String imageUrl;
-    private List<String> images;
-    private Integer stock;
     private Integer sold;
     private String category;
-    private List<ProductSpecResponse> specs;
-    private String description;
+    private Long sellerId;
+    private String shopName;
 
-    public ProductResponse(Product product) {
+    public ProductCardResponse(Product product) {
         this.id = product.getId();
-        this.code = CodeUtils.encodeProductId(product.getId());
+        // this.code = CodeUtils.encodeProductId(product.getId());
         this.name = product.getName();
         this.slug = product.getSlug();
         this.brand = product.getBrand();      
@@ -40,16 +35,10 @@ public class ProductResponse {
         this.isDiscounted = product.getIsDiscounted();
         this.rating = product.getRating();
         this.imageUrl = product.getImageUrl();
-        this.images = product.getImages().stream()
-            .map(ProductImage::getUrl)
-            .collect(Collectors.toList());
-        this.stock = product.getStock();
         this.sold = product.getSold();
         this.category = product.getCategory().getName();
-        this.specs = product.getSpecs().stream()
-            .map(ProductSpecResponse::new)
-            .collect(Collectors.toList());
-        this.description = product.getDescription();
-    }
-        
+        this.sellerId = product.getSeller().getId();
+        this.shopName = product.getSeller().getShopName();
+    }    
 }
+

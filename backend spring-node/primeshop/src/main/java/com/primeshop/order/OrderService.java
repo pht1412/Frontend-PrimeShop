@@ -16,6 +16,8 @@ import com.primeshop.cart.CartItemRepo;
 import com.primeshop.cart.CartRepo;
 import com.primeshop.product.Product;
 import com.primeshop.product.ProductRepo;
+import com.primeshop.seller.SellerProfile;
+import com.primeshop.seller.SellerRepo;
 import com.primeshop.user.User;
 import com.primeshop.user.UserRepo;
 import com.primeshop.voucher.Voucher;
@@ -37,6 +39,8 @@ public class OrderService {
     private OrderRepo orderRepo;
     @Autowired
     private VoucherService voucherService;
+    @Autowired
+    private SellerRepo sellerRepo;
 
     private final OrderRepo orderRepository;
 
@@ -216,9 +220,10 @@ public class OrderService {
             case READY_TO_SHIP: return newStatus == OrderStatus.SHIPPING || newStatus == OrderStatus.CANCELLED;
             case SHIPPING: return newStatus == OrderStatus.SHIPPED || newStatus == OrderStatus.CANCELLED;
             case SHIPPED: return newStatus == OrderStatus.DELIVERED || newStatus == OrderStatus.CANCELLED;
-            case DELIVERED: return newStatus == OrderStatus.CANCELLED;
+            case DELIVERED: return newStatus == OrderStatus.CANCELLED || newStatus == OrderStatus.DONE;
             case CANCELLED: return false;
             case FAILED_DELIVERY: return false;
+            case DONE: return false;
             default: throw new IllegalArgumentException("Unknown status: " + currentStatus);
         }
     }
@@ -243,17 +248,36 @@ public class OrderService {
         return orderRepo.countByUser(userId);
     }
 
+    @Transactional
     public boolean updateOrderStatus(Long orderId, String status) {
-    Optional<Order> optionalOrder = orderRepository.findById(orderId);
-    if (optionalOrder.isEmpty()) return false;
-    Order order = optionalOrder.get();
+        
+        // 1. Chuyển đổi String (ví dụ: "DONE") thành Enum (OrderStatus.DONE)
+        OrderStatus newStatus;
+        try {
+            newStatus = OrderStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Trạng thái không hợp lệ: " + status);
+            throw new RuntimeException("Trạng thái không hợp lệ: " + status, e);
+        }
 
-    // Kiểm tra trước khi set
-    order.setStatus(OrderStatus.valueOf(status));
+        // 2. Tìm đơn hàng
+        // (Sử dụng 'orderRepo' vì nó đã được @Autowired)
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
+        
+        OrderStatus currentStatus = order.getStatus();
 
-    orderRepository.save(order);
-    return true;
-}
+        // 3. Chạy logic kiểm tra
+        if (!isValidStatusTransition(currentStatus, newStatus)) {
+            System.err.println("Không thể chuyển từ " + currentStatus + " sang " + newStatus);
+            throw new RuntimeException("Không thể chuyển trạng thái từ " + currentStatus + " sang " + newStatus);
+        }
+
+        // 4. Cập nhật và Lưu
+        order.setStatus(newStatus);
+        orderRepo.save(order);
+        return true;
+    }
 
 
     private boolean isValidStatus(String status) {
@@ -264,6 +288,19 @@ public class OrderService {
         );
         return allowedStatuses.contains(status);
     }
+        public List<OrderResponse> getOrdersBySeller() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found!"));
+        SellerProfile seller = sellerRepo.findByUserId(user.getId())
+            .orElseThrow(() -> new RuntimeException("Tài khoản hiện tại không phải là người bán!"));
+        List<Order> orders = orderRepo.findBySellerId(seller.getId());
+        return orders.stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
+    }
+
+
+    
 
 
 }

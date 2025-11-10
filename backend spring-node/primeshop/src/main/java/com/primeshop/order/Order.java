@@ -58,6 +58,7 @@ public class Order {
     private String phoneNumber;
     private String address;
     private String note;
+    private Long sellerId;
     
     @Column(name = "estimated_delivery_date")
     private LocalDateTime estimatedDeliveryDate;

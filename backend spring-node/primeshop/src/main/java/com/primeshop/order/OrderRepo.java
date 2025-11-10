@@ -29,4 +29,6 @@ public interface OrderRepo extends JpaRepository<Order, Long>, JpaSpecificationE
     List<Order> findByStatus(OrderStatus status);
     
     List<Order> findByStatusIn(List<OrderStatus> statuses);
+    List<Order> findBySellerId(Long sellerId);
+
 }

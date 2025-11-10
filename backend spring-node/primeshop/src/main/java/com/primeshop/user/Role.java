@@ -30,6 +30,7 @@ public class Role {
         ROLE_USER,
         ROLE_BUSSINESS,
         ROLE_ADMIN,
-        ROLE_DELIVERY_UNIT
+        ROLE_DELIVERY_UNIT,
+        ROLE_SELLER
     }
 }

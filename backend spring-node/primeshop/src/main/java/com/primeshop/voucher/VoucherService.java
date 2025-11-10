@@ -539,4 +539,17 @@ public class VoucherService {
         // Nếu muốn gán cho user, có thể mở rộng thêm trường userId hoặc bảng voucher_user
         return voucherRepo.save(voucher);
     }
+    @Transactional
+    public Voucher unactivateVoucher(Long id) {
+        Optional<Voucher> voucherOpt = voucherRepo.findById(id);
+
+        if (voucherOpt.isPresent()) {
+            Voucher voucher = voucherOpt.get();
+            voucher.setIsActive(false); // setter vẫn là setIsActive
+            return voucherRepo.save(voucher);
+        }
+
+        throw new IllegalArgumentException("Voucher không tồn tại với ID: " + id);
+    }
+    
 }
