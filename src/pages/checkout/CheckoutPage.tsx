@@ -370,7 +370,8 @@ const CheckoutPage = () => {
         note: formData.note,
         paymentMethod: formData.paymentMethod,
         voucherCodes: voucherCodes, // <-- Sử dụng voucherCodes từ appliedVouchers
-        shippingFee: shippingFee
+        shippingFee: shippingFee,
+        finalTotal: finalTotal
       };
 
       console.log("📦 Order data:", orderData);
@@ -594,7 +595,7 @@ const CheckoutPage = () => {
                 disabled={loading}
               ></textarea>
             </div>
-            <div className="input-group">
+            {/* <div className="input-group">
               <label htmlFor="paymentMethod">Phương thức thanh toán</label>
               <select
                 id="paymentMethod"
@@ -607,7 +608,7 @@ const CheckoutPage = () => {
                 <option value="bank">Chuyển khoản ngân hàng</option>
                 <option value="wallet">Ví điện tử</option>
               </select>
-            </div>
+            </div> */}
             <button type="submit" className="auth-btn" disabled={loading}>
               {loading ? "Đang xử lý..." : "Xác nhận đơn hàng"}
             </button>

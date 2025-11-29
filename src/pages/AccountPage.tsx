@@ -414,10 +414,10 @@ const handleReceiveOrder = async (orderId: string) => {
                     {order.orderStatus === 'CONFIRMED' && (
                       <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => showPaymentModal(order)}>Thanh toán</Button>
                     )}
-                    <Button variant="contained" color="primary" onClick={() => showOrderDetails(order)}>Xem chi tiết</Button>
+                    {/* <Button variant="contained" color="primary" onClick={() => showOrderDetails(order)}>Xem chi tiết</Button>
                     {order.orderStatus === 'DELIVERED' && (
                       <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => handleReceiveOrder(order.orderId)}>Đã nhận hàng</Button>
-                    )}
+                    )} */}
                   </div>
                 ))}
               </div>

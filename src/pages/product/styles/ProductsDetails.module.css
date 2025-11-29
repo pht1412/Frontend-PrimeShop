@@ -335,3 +335,56 @@
     height: 60px;
   }
 }
+.shopInfo {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.shopBox {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.shopAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.shopDetail {
+  flex: 1;
+}
+
+.shopName {
+  font-size: 16px;
+  margin: 0;
+}
+
+.shopStatus {
+  font-size: 14px;
+  color: #777;
+}
+
+.onlineStatus {
+  font-size: 14px;
+  color: #1a73e8;
+}
+
+.chatButton {
+  background: #1a73e8;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.chatButton:hover {
+  background: #0059c9;
+}
