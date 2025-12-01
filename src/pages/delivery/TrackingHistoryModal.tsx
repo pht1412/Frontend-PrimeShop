@@ -15,7 +15,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider
+  Divider,
+  useTheme // Import useTheme để xử lý màu an toàn
 } from '@mui/material';
 import {
   LocalShipping as LocalShippingIcon,
@@ -33,20 +34,24 @@ interface TrackingEvent {
   id: number;
   status: string;
   location: string;
-  timestamp: string; // ISO string
+  timestamp: string; 
 }
 
 interface TrackingHistoryModalProps {
-  orderId: string | null;  // mã đơn hàng dạng string
+  orderId: string | null;
   open: boolean;
   onClose: () => void;
 }
+
+// Định nghĩa type màu hợp lệ cho Chip của MUI
+type MuiChipColor = 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
   orderId,
   open,
   onClose
 }) => {
+  const theme = useTheme(); // Hook để lấy theme
   const [trackingHistory, setTrackingHistory] = useState<TrackingEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,13 +67,10 @@ const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
 
   const fetchTrackingHistory = async () => {
     if (!orderId) return;
-
     try {
       setLoading(true);
       setError(null);
       const response = await api.get(`/delivery/orders/${orderId}/tracking`);
-      console.log('Tracking data received:', response.data);
-
       if (Array.isArray(response.data)) {
         setTrackingHistory(response.data);
       } else {
@@ -84,88 +86,94 @@ const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
     }
   };
 
-  // Lấy màu cho status (chú ý các màu phải là keys có trong palette MUI)
-  const getColorByStatus = (status: string) => {
+  // FIX 1: Hàm trả về đúng Type màu của Chip (Thay 'grey' bằng 'default')
+  const getChipColor = (status: string): MuiChipColor => {
     switch (status) {
       case 'PENDING':
-        return 'grey';
+        return 'default'; // Mặc định là màu xám nhạt
       case 'CONFIRMED':
+      case 'SHIPPING':
         return 'info';
       case 'PAID':
         return 'primary';
       case 'PROCESSING':
+      case 'READY_TO_SHIP':
         return 'warning';
       case 'INVENTORY':
         return 'secondary';
-      case 'READY_TO_SHIP':
-        return 'warning';
-      case 'SHIPPING':
-        return 'info';
       case 'DELIVERED':
         return 'success';
       case 'FAILED_DELIVERY':
         return 'error';
       default:
-        return 'grey';
+        return 'default';
+    }
+  };
+
+  // FIX 2: Hàm riêng để lấy mã Hex màu thực tế cho Icon (Tránh truy cập dynamic theme gây crash)
+  const getIconHexColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return theme.palette.grey[500];
+      case 'CONFIRMED':
+      case 'SHIPPING':
+        return theme.palette.info.main;
+      case 'PAID':
+        return theme.palette.primary.main;
+      case 'PROCESSING':
+      case 'READY_TO_SHIP':
+        return theme.palette.warning.main;
+      case 'INVENTORY':
+        return theme.palette.secondary.main;
+      case 'DELIVERED':
+        return theme.palette.success.main;
+      case 'FAILED_DELIVERY':
+        return theme.palette.error.main;
+      default:
+        return theme.palette.grey[500];
     }
   };
 
   const getLabelByStatus = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return 'Chờ xử lý';
-      case 'CONFIRMED':
-        return 'Đã xác nhận';
-      case 'PAID':
-        return 'Đã thanh toán';
-      case 'PROCESSING':
-        return 'Đang xử lý';
-      case 'INVENTORY':
-        return 'Tồn kho';
-      case 'READY_TO_SHIP':
-        return 'Chờ giao';
-      case 'SHIPPING':
-        return 'Đang giao';
-      case 'DELIVERED':
-        return 'Đã giao';
-      case 'FAILED_DELIVERY':
-        return 'Giao thất bại';
-      default:
-        return status;
+      case 'PENDING': return 'Chờ xử lý';
+      case 'CONFIRMED': return 'Đã xác nhận';
+      case 'PAID': return 'Đã thanh toán';
+      case 'PROCESSING': return 'Đang xử lý';
+      case 'INVENTORY': return 'Tồn kho';
+      case 'READY_TO_SHIP': return 'Chờ giao';
+      case 'SHIPPING': return 'Đang giao';
+      case 'DELIVERED': return 'Đã giao';
+      case 'FAILED_DELIVERY': return 'Giao thất bại';
+      default: return status;
     }
   };
 
   const getIconByStatus = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return <ScheduleIcon />;
-      case 'CONFIRMED':
-        return <CheckIcon />;
-      case 'PAID':
-        return <CheckIcon />;
-      case 'PROCESSING':
-        return <CircularProgress size={20} color="warning" />;
-      case 'INVENTORY':
-        return <StorageIcon />;
-      case 'READY_TO_SHIP':
-        return <ScheduleIcon />;
-      case 'SHIPPING':
-        return <LocalShippingIcon />;
-      case 'DELIVERED':
-        return <CheckCircleIcon />;
-      case 'FAILED_DELIVERY':
-        return <ErrorIcon />;
-      default:
-        return <LocationOnIcon />;
+      case 'PENDING': return <ScheduleIcon />;
+      case 'CONFIRMED': return <CheckIcon />;
+      case 'PAID': return <CheckIcon />;
+      case 'PROCESSING': return <CircularProgress size={20} color="inherit" />; // color inherit để ăn theo parent
+      case 'INVENTORY': return <StorageIcon />;
+      case 'READY_TO_SHIP': return <ScheduleIcon />;
+      case 'SHIPPING': return <LocalShippingIcon />;
+      case 'DELIVERED': return <CheckCircleIcon />;
+      case 'FAILED_DELIVERY': return <ErrorIcon />;
+      default: return <LocationOnIcon />;
     }
   };
 
   const formatDateTime = (timestamp: string) => {
-    const dateObj = new Date(timestamp);
-    return {
-      date: dateObj.toLocaleDateString('vi-VN'),
-      time: dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-    };
+    try {
+        const dateObj = new Date(timestamp);
+        return {
+            date: dateObj.toLocaleDateString('vi-VN'),
+            time: dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+        };
+    } catch (e) {
+        return { date: '-', time: '-' };
+    }
   };
 
   return (
@@ -211,39 +219,29 @@ const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
         {!loading && !error && trackingHistory.length > 0 && (
           <List className="delivery-tracking-list">
             {trackingHistory.map((event, idx) => {
-              // Tránh lỗi khi event thiếu thông tin cần thiết
               if (!event || !event.status || !event.timestamp) return null;
 
               const { date, time } = formatDateTime(event.timestamp);
-              const colorKey = getColorByStatus(event.status);
+              const chipColor = getChipColor(event.status); // Màu cho Chip (Safe type)
+              const iconColorHex = getIconHexColor(event.status); // Màu Hex cho Icon Box
 
               return (
-                <React.Fragment key={event.id}>
+                <React.Fragment key={event.id || idx}>
                   <ListItem alignItems="flex-start" className="delivery-tracking-item">
                     <ListItemIcon>
+                        {/* FIX 3: Box style an toàn, dùng trực tiếp mã Hex */}
                       <Box
                         className="status-icon"
                         sx={{
                           width: 40,
                           height: 40,
                           borderRadius: '50%',
-                          backgroundColor: (theme) => {
-                            const paletteEntry = theme.palette[colorKey];
-                            if (typeof paletteEntry === 'string') {
-                              return paletteEntry;
-                            }
-                            return paletteEntry?.main ?? theme.palette.grey[500];
-                          },
+                          backgroundColor: iconColorHex, // Dùng hex trực tiếp
                           color: '#fff',
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          boxShadow: (theme) =>
-                            `0 0 8px ${
-                              (typeof theme.palette[colorKey] === 'string'
-                                ? theme.palette[colorKey]
-                                : theme.palette[colorKey]?.main) || theme.palette.grey[500]
-                            }66`
+                          boxShadow: `0 0 8px ${iconColorHex}66` // Thêm alpha cho shadow thủ công
                         }}
                       >
                         {getIconByStatus(event.status)}
@@ -252,17 +250,12 @@ const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
                     <ListItemText
                       primary={
                         <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                          {/* FIX 4: Chip dùng đúng color type */}
                           <Chip
                             label={getLabelByStatus(event.status)}
-                            color={colorKey as
-                              | 'default'
-                              | 'primary'
-                              | 'secondary'
-                              | 'error'
-                              | 'info'
-                              | 'success'
-                              | 'warning'}
+                            color={chipColor} 
                             size="small"
+                            variant="outlined" // Thêm outlined cho đẹp nếu muốn
                           />
                           <Typography variant="caption" color="textSecondary">
                             {date} lúc {time}
@@ -271,12 +264,12 @@ const TrackingHistoryModal: React.FC<TrackingHistoryModalProps> = ({
                       }
                       secondary={
                         <Typography variant="body2" color="textSecondary">
-                          {event.location || '-'}
+                          {event.location || 'Không có thông tin vị trí'}
                         </Typography>
                       }
                     />
                   </ListItem>
-                  {idx < trackingHistory.length - 1 && <Divider component="li" />}
+                  {idx < trackingHistory.length - 1 && <Divider component="li" variant="inset" />}
                 </React.Fragment>
               );
             })}

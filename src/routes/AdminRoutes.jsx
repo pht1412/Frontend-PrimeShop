@@ -10,6 +10,8 @@ import NewsManager from "../pages/admin/NewsManager";
 import VouchersManager from "../pages/admin/VouchersManager";
 import WalletManager from "../pages/admin/WalletsManager";
 import C2CManagement from "../pages/admin/C2CManagement";
+import RevenueManager from "../pages/admin/RevenueManager";
+import ImportTransactionManager from "../pages/admin/ImportTransactionManager";
 
 const AdminRoutes = () => {
   return (
@@ -106,7 +108,26 @@ const AdminRoutes = () => {
           </AdminRoute>
         }
       />
-
+      <Route  
+        path="revenues"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <RevenueManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="import-transactions"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <ImportTransactionManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
     </Routes>
   );
 };

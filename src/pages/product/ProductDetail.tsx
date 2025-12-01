@@ -10,6 +10,7 @@ import { Review } from "../../types/review";
 import { Button, Card, CardContent, TextField } from "@mui/material";
 import StarRatings from 'react-star-ratings';
 import Swal from "sweetalert2";
+import sellerStyles from "./styles/SellerProfile.module.css";
 
 const mockPromotions = [
   "🎁 Giảm ngay 500.000đ khi thanh toán qua Momo.",
@@ -197,6 +198,39 @@ const ProductDetailPage: React.FC = () => {
               ))}
             </ul>
           </div>
+        </section>
+        <section className={styles.productDetails}>
+          <div className={sellerStyles.sellerInfoCard}>
+            {/* 1. Phần Avatar */}
+            <img 
+                src={product?.seller.identityCard} // <-- Dùng avatar, KHÔNG dùng CCCD
+                alt={product?.seller.shopName}
+                className={sellerStyles.avatar}
+            />
+            
+            {/* 2. Phần thông tin text */}
+            <div className={sellerStyles.info}>
+                <h3 className={sellerStyles.shopName}>{product?.seller.shopName}</h3>
+                
+                <p className={sellerStyles.description}>{product?.seller.description}</p>
+                
+                <p className={sellerStyles.phone}>Liên hệ: {product?.seller.phone}</p>
+                
+                {/* Chúng ta sẽ biến status thành một cái "badge" (nhãn) */}
+                <div className={sellerStyles.statusWrapper}>
+                    Trạng thái: 
+                    <span 
+                        className={`${sellerStyles.statusBadge} ${
+                            product?.seller.status === 'VERIFIED_SELLER' 
+                            ? sellerStyles.active 
+                            : sellerStyles.inactive
+                        }`}
+                    >
+                        {product?.seller.status}
+                    </span>
+                </div>
+            </div>
+        </div>
         </section>
         <section className={styles.productDetails}>
           <div className={styles.description}>

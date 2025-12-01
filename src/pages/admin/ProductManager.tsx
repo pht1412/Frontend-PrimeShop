@@ -268,7 +268,7 @@ const ProductManager: React.FC = () => {
         <tbody id="specs">
           ${product.specs.map((spec) => `
             <tr>
-              <td><input type="text" name="specName" value="${spec.name}" placeholder="Tên thông số"></td>
+              <td><input type="text" name="specName" value="${spec.name.replace(':', '')}" placeholder="Tên thông số"></td>
               <td><input type="text" name="specValue" value="${spec.value}" placeholder="Giá trị"></td>
             </tr>
           `).join('')}

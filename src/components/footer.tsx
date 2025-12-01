@@ -7,7 +7,6 @@ import facebookIcon from '../assets/images//icons/fb.png';
 import instagramIcon from '../assets/images//icons/ins.png';
 import tiktokIcon from '../assets/images//icons/tiktok.png';
 import zaloIcon from '../assets/images//icons/zalo.png';
-
 // Import icon VNPay
 import vnpayIcon from '../assets/images//icons/vnpay.png';
 

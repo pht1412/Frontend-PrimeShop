@@ -11,22 +11,15 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null); // user: { username, role }
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('user');
-      }
-    }    
+    if (storedUser) setUser(JSON.parse(storedUser));    
   }, []);
 
-  const login = (user: User, token: string, cartItemCount: number = 0) => {
+  const login = (user: User, token: string) => {
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('token', token);
     setUser(user);

@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { CartContext } from "../context/CartContext";
 import Swal from "sweetalert2";
+import { ChatWidget, FloatingChatWidget } from "./chat/ChatWidget";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,6 +124,13 @@ const Header = () => {
               <span className="cart-count">{cartItemCount}</span>
             )}
           </Link>
+          {/* {!user ? (
+            <Link to="/login" className="cart-btn">
+              <FaFacebookMessenger className="icon" /> Tin nhắn
+            </Link>
+          ) : (
+            <FloatingChatWidget />
+          )} */}
         </div>
 
         {/* Menu Hamburger cho mobile */}

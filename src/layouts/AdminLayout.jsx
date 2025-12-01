@@ -64,6 +64,16 @@ const AdminLayout = ({ children }) => {
                   Quản lý C2C
                 </NavLink>
               </li>
+              <li>
+              <NavLink to="/admin/revenues" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Doanh thu
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/import-transactions" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Nhập hàng
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </aside>

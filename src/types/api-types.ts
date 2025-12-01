@@ -4,6 +4,25 @@
  */
 
 export interface paths {
+<<<<<<< HEAD
+=======
+    "/api/news/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getNewsById"];
+        put: operations["updateNews"];
+        post?: never;
+        delete: operations["deleteNews"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/admin/order/update-status": {
         parameters: {
             query?: never;
@@ -20,6 +39,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProductReviews"];
+        put?: never;
+        post: operations["addProductReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/product/rate": {
         parameters: {
             query?: never;
@@ -84,6 +122,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/news": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllNews"];
+        put?: never;
+        post: operations["createNews"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/cart/remove": {
         parameters: {
             query?: never;
@@ -164,7 +221,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products/add": {
+=======
+    "/api/admin/product/deactive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deactiveProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/product/add": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -180,6 +257,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/admin/product/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["activeProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/admin/order/filter": {
         parameters: {
             query?: never;
@@ -196,6 +292,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/admin/category/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["updateCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/admin/category/add": {
         parameters: {
             query?: never;
@@ -228,7 +343,11 @@ export interface paths {
         patch: operations["updateUserInfo"];
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products/update": {
+=======
+    "/api/admin/product/update": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -244,19 +363,28 @@ export interface paths {
         patch: operations["updateProduct"];
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products/deactive": {
+=======
+    "/api/review/rating": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+<<<<<<< HEAD
         get?: never;
+=======
+        get: operations["getProductRating"];
+>>>>>>> tphat-unmerged
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
+<<<<<<< HEAD
         patch: operations["deactiveProduct"];
         trace?: never;
     };
@@ -274,6 +402,9 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["activeProduct"];
+=======
+        patch?: never;
+>>>>>>> tphat-unmerged
         trace?: never;
     };
     "/api/product": {
@@ -308,6 +439,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/product/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["hello"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/product/test-product": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllProductsTest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/product/slug": {
         parameters: {
             query?: never;
@@ -324,6 +490,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/product/rating/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAverageRating"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/product/product-detail/{productSlug}": {
         parameters: {
             query?: never;
@@ -388,6 +573,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/product/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["countProduct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/product/category": {
         parameters: {
             query?: never;
@@ -468,6 +672,73 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/order/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["countOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/order/all-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/news/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getNewsBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/news/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["countNews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/category": {
         parameters: {
             query?: never;
@@ -484,6 +755,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/category/slugs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getCategorySlugs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/category/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["countCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/category/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/cart": {
         parameters: {
             query?: never;
@@ -532,14 +854,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products": {
+=======
+    "/api/auth/count": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+<<<<<<< HEAD
         get: operations["getAllProducts_1"];
+=======
+        get: operations["countUser"];
+>>>>>>> tphat-unmerged
         put?: never;
         post?: never;
         delete?: never;
@@ -548,7 +878,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products/is-deactive": {
+=======
+    "/api/auth/check-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["checkRole"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/all-users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/product": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchProducts_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/product/is-deactive": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -564,7 +946,11 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
     "/api/admin/products/is-active": {
+=======
+    "/api/admin/product/is-active": {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -580,6 +966,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/admin/product/brands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBrands_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
     "/api/admin/order/get": {
         parameters: {
             query?: never;
@@ -603,7 +1008,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+<<<<<<< HEAD
         get: operations["getAllOrders"];
+=======
+        get: operations["getAllOrders_1"];
+>>>>>>> tphat-unmerged
         put?: never;
         post?: never;
         delete?: never;
@@ -612,12 +1021,104 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+<<<<<<< HEAD
+=======
+    "/api/admin/category/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllCategories_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/product/delete-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteProductImage"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+>>>>>>> tphat-unmerged
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+<<<<<<< HEAD
         ProductResponse: {
             code?: string;
+=======
+        NewsRequest: {
+            title: string;
+            textUrl: string;
+            excerpt?: string;
+            imageUrl?: string;
+            /** Format: int64 */
+            categoryId?: number;
+            status: string;
+        };
+        NewsResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            slug?: string;
+            excerpt?: string;
+            imageUrl?: string;
+            textUrl?: string;
+            /** Format: int64 */
+            categoryId?: number;
+            /** Format: int64 */
+            authorId?: number;
+            status?: string;
+            /** Format: date-time */
+            publishedAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            /** Format: int32 */
+            viewCount?: number;
+        };
+        ProductReviewRequest: {
+            productSlug?: string;
+            /** Format: int32 */
+            rating?: number;
+            content?: string;
+        };
+        ProductReviewResponse: {
+            /** Format: int64 */
+            id?: number;
+            content?: string;
+            /** Format: int32 */
+            rating?: number;
+            username?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            isApproved?: boolean;
+            isDeleted?: boolean;
+        };
+        ProductResponse: {
+            /** Format: int64 */
+            id?: number;
+>>>>>>> tphat-unmerged
             name?: string;
             slug?: string;
             brand?: string;
@@ -634,6 +1135,7 @@ export interface components {
             /** Format: int32 */
             sold?: number;
             category?: string;
+<<<<<<< HEAD
             specs?: components["schemas"]["ProductSpecResponse"][];
             description?: string;
         };
@@ -641,6 +1143,10 @@ export interface components {
             name?: string;
             value?: string;
         };
+=======
+            description?: string;
+        };
+>>>>>>> tphat-unmerged
         PaymentRequest: {
             /** Format: int64 */
             orderId?: number;
@@ -691,6 +1197,13 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+<<<<<<< HEAD
+=======
+            fullName?: string;
+            phoneNumber?: string;
+            address?: string;
+            note?: string;
+>>>>>>> tphat-unmerged
             deleted?: boolean;
             orderItems?: components["schemas"]["OrderItem"][];
         };
@@ -708,6 +1221,11 @@ export interface components {
         };
         OrderRequest: {
             orderItems?: components["schemas"]["OrderItem"][];
+<<<<<<< HEAD
+=======
+            fullName?: string;
+            phoneNumber?: string;
+>>>>>>> tphat-unmerged
             address?: string;
             note?: string;
         };
@@ -739,6 +1257,10 @@ export interface components {
             specs?: components["schemas"]["ProductSpec"][];
             cartItems?: components["schemas"]["CartItem"][];
             images?: components["schemas"]["ProductImage"][];
+<<<<<<< HEAD
+=======
+            reviews?: components["schemas"]["ProductReview"][];
+>>>>>>> tphat-unmerged
             description?: string;
             code?: string;
         };
@@ -748,6 +1270,24 @@ export interface components {
             url?: string;
             product?: components["schemas"]["Product"];
         };
+<<<<<<< HEAD
+=======
+        ProductReview: {
+            /** Format: int64 */
+            id?: number;
+            product?: components["schemas"]["Product"];
+            user?: components["schemas"]["User"];
+            content?: string;
+            /** Format: int32 */
+            rating?: number;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            isApproved?: boolean;
+            isDeleted?: boolean;
+        };
+>>>>>>> tphat-unmerged
         ProductSpec: {
             /** Format: int64 */
             id?: number;
@@ -769,6 +1309,10 @@ export interface components {
             fullName?: string;
             phoneNumber?: string;
             address?: string;
+<<<<<<< HEAD
+=======
+            avatar?: string;
+>>>>>>> tphat-unmerged
             roles?: components["schemas"]["Role"][];
             carts?: components["schemas"]["Cart"][];
             enabled?: boolean;
@@ -790,6 +1334,10 @@ export interface components {
             fullName?: string;
             phoneNumber?: string;
             address?: string;
+<<<<<<< HEAD
+=======
+            avatar?: string;
+>>>>>>> tphat-unmerged
         };
         LoginRequest: {
             username?: string;
@@ -812,6 +1360,13 @@ export interface components {
             specs?: components["schemas"]["ProductSpecResponse"][];
             description?: string;
         };
+<<<<<<< HEAD
+=======
+        ProductSpecResponse: {
+            name?: string;
+            value?: string;
+        };
+>>>>>>> tphat-unmerged
         OrderFilterRequest: {
             /** Format: int64 */
             userId?: number;
@@ -847,7 +1402,16 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+<<<<<<< HEAD
             orderItems?: components["schemas"]["OrderItemResponse"][];
+=======
+            fullName?: string;
+            phoneNumber?: string;
+            address?: string;
+            note?: string;
+            orderItems?: components["schemas"]["OrderItemResponse"][];
+            admin?: boolean;
+>>>>>>> tphat-unmerged
         };
         CategoryRequest: {
             name?: string;
@@ -858,6 +1422,27 @@ export interface components {
             fullName?: string;
             phoneNumber?: string;
             address?: string;
+<<<<<<< HEAD
+=======
+            avatar?: string;
+        };
+        ProductCardResponse: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            slug?: string;
+            brand?: string;
+            price?: number;
+            discountPercent?: number;
+            discountPrice?: number;
+            isDiscounted?: boolean;
+            /** Format: double */
+            rating?: number;
+            imageUrl?: string;
+            /** Format: int32 */
+            sold?: number;
+            category?: string;
+>>>>>>> tphat-unmerged
         };
         ProductFilterRequest: {
             search?: string;
@@ -866,18 +1451,83 @@ export interface components {
             minPrice?: number;
             maxPrice?: number;
         };
+<<<<<<< HEAD
+=======
+        PageProductCardResponse: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ProductCardResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int32 */
+            pageNumber?: number;
+            paged?: boolean;
+            unpaged?: boolean;
+        };
+        SortObject: {
+            empty?: boolean;
+            sorted?: boolean;
+            unsorted?: boolean;
+        };
+>>>>>>> tphat-unmerged
         PaymentCallbackResult: {
             success?: boolean;
             /** Format: int32 */
             httpStatus?: number;
             message?: string;
         };
+<<<<<<< HEAD
         UserResponse: {
+=======
+        PageNewsResponse: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["NewsResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        UserResponse: {
+            /** Format: int64 */
+            id?: number;
+>>>>>>> tphat-unmerged
             username?: string;
             fullName?: string;
             email?: string;
             phoneNumber?: string;
             address?: string;
+<<<<<<< HEAD
+=======
+            avatar?: string;
+>>>>>>> tphat-unmerged
         };
     };
     responses: never;
@@ -888,6 +1538,77 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+<<<<<<< HEAD
+=======
+    getNewsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NewsResponse"];
+                };
+            };
+        };
+    };
+    updateNews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NewsResponse"];
+                };
+            };
+        };
+    };
+    deleteNews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     updateOrderStatus: {
         parameters: {
             query: {
@@ -911,6 +1632,55 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getProductReviews: {
+        parameters: {
+            query: {
+                productSlug: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProductReviewResponse"][];
+                };
+            };
+        };
+    };
+    addProductReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProductReviewResponse"];
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     rateProduct: {
         parameters: {
             query: {
@@ -1005,6 +1775,58 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getAllNews: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                categoryId?: number;
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageNewsResponse"];
+                };
+            };
+        };
+    };
+    createNews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NewsResponse"];
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     removeFromCart: {
         parameters: {
             query?: never;
@@ -1121,6 +1943,31 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    deactiveProduct: {
+        parameters: {
+            query: {
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     addProduct: {
         parameters: {
             query?: never;
@@ -1145,6 +1992,31 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    activeProduct: {
+        parameters: {
+            query: {
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     filterOrders: {
         parameters: {
             query?: never;
@@ -1169,6 +2041,33 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    updateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     createCategory: {
         parameters: {
             query?: never;
@@ -1243,10 +2142,17 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
     deactiveProduct: {
         parameters: {
             query: {
                 id: number;
+=======
+    getProductRating: {
+        parameters: {
+            query: {
+                productSlug: string;
+>>>>>>> tphat-unmerged
             };
             header?: never;
             path?: never;
@@ -1260,6 +2166,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+<<<<<<< HEAD
                     "*/*": Record<string, never>;
                 };
             };
@@ -1283,6 +2190,9 @@ export interface operations {
                 };
                 content: {
                     "*/*": Record<string, never>;
+=======
+                    "*/*": number;
+>>>>>>> tphat-unmerged
                 };
             };
         };
@@ -1327,6 +2237,49 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    hello: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    getAllProductsTest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Product"][];
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     getProductBySlug: {
         parameters: {
             query: {
@@ -1349,6 +2302,31 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getAverageRating: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     getProductDetail: {
         parameters: {
             query?: never;
@@ -1408,7 +2386,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+<<<<<<< HEAD
                     "*/*": components["schemas"]["ProductResponse"][];
+=======
+                    "*/*": components["schemas"]["ProductCardResponse"][];
+>>>>>>> tphat-unmerged
                 };
             };
         };
@@ -1428,7 +2410,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+<<<<<<< HEAD
                     "*/*": components["schemas"]["ProductResponse"][];
+=======
+                    "*/*": components["schemas"]["ProductCardResponse"][];
+                };
+            };
+        };
+    };
+    countProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+>>>>>>> tphat-unmerged
                 };
             };
         };
@@ -1479,6 +2485,11 @@ export interface operations {
         parameters: {
             query: {
                 request: components["schemas"]["ProductFilterRequest"];
+<<<<<<< HEAD
+=======
+                page?: number;
+                size?: number;
+>>>>>>> tphat-unmerged
             };
             header?: never;
             path?: never;
@@ -1492,7 +2503,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+<<<<<<< HEAD
                     "*/*": Record<string, never>;
+=======
+                    "*/*": components["schemas"]["PageProductCardResponse"];
+>>>>>>> tphat-unmerged
                 };
             };
         };
@@ -1541,6 +2556,93 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    countOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getAllOrders: {
+        parameters: {
+            query: {
+                request: components["schemas"]["OrderFilterRequest"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getNewsBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NewsResponse"];
+                };
+            };
+        };
+    };
+    countNews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     getCategories: {
         parameters: {
             query?: never;
@@ -1561,6 +2663,69 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getCategorySlugs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    countCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getAllCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     getCart: {
         parameters: {
             query?: never;
@@ -1621,7 +2786,11 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
     getAllProducts_1: {
+=======
+    countUser: {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -1636,7 +2805,75 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+<<<<<<< HEAD
                     "*/*": components["schemas"]["ProductResponse"][];
+=======
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    checkRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getAllUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    searchProducts_1: {
+        parameters: {
+            query: {
+                request: components["schemas"]["ProductFilterRequest"];
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageProductCardResponse"];
+>>>>>>> tphat-unmerged
                 };
             };
         };
@@ -1681,6 +2918,29 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getBrands_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
     getOrderById: {
         parameters: {
             query: {
@@ -1703,7 +2963,11 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
     getAllOrders: {
+=======
+    getAllOrders_1: {
+>>>>>>> tphat-unmerged
         parameters: {
             query?: never;
             header?: never;
@@ -1723,4 +2987,50 @@ export interface operations {
             };
         };
     };
+<<<<<<< HEAD
+=======
+    getAllCategories_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    deleteProductImage: {
+        parameters: {
+            query: {
+                productSlug: string;
+                imageUrl: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ProductResponse"];
+                };
+            };
+        };
+    };
+>>>>>>> tphat-unmerged
 }

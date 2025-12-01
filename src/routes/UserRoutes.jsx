@@ -27,6 +27,8 @@ import MinigamePage from "../pages/games/MinigamePage";
 import GameListPage from "../pages/games/GameListPage";
 import C2CProduct from "../pages/productC2C/C2CProductPage";
 import C2CProductDetailPage from "../pages/productC2C/C2CProductDetailPage";
+// import Chatbot from "../components/chat/Chatbot";
+import PrimeShopChat from "../components/chat/ChatC2C";
 
 const UserRoutes = () => {
   return (
@@ -58,6 +60,8 @@ const UserRoutes = () => {
         <Route path="/c2c-product-detail/:id" element={<C2CProductDetailPage />} />
       </Routes>
       <Footer />
+      {/* <Chatbot /> */}
+      <PrimeShopChat />
     </div>
   );
 };

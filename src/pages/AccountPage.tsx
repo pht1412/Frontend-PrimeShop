@@ -53,6 +53,52 @@ const AccountPage = () => {
     });
   }
 
+  const showPaymentMethod = (orders) => {
+  Swal.fire({
+    title: 'Chọn phương thức thanh toán',
+    html: `
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <button id="pay-vnpay" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://images.seeklogo.com/logo-png/42/1/vnpay-logo-png_seeklogo-428006.png" alt="VNPAY" style="height: 32px;" />
+          <span>Thanh toán qua VNPAY</span>
+        </button>
+        <button id="pay-paypal" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" style="height: 32px;" />
+          <span>Thanh toán qua PayPal</span>
+        </button>
+        <button id="pay-momo" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: none; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer;">
+          <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" style="height: 32px;" />
+          <span>Thanh toán qua MoMo</span>
+        </button>
+        <button id="pay-wallet" class="swal2-confirm swal2-styled btn-payment-wallet">
+            Thanh toán bằng Ví Prime
+        </button>
+      </div>
+    `,
+    showConfirmButton: false,
+    showCloseButton: true,
+    didOpen: () => {
+      const orderId = orders.orderId || orders[0]?.orderId; // fallback if orders is array
+      document.getElementById('pay-vnpay')?.addEventListener('click', () => {
+        handleVnPayPayOrder(orderId);
+        Swal.close();
+      });
+      document.getElementById('pay-paypal')?.addEventListener('click', () => {
+        handlePaypalPayOrder(orderId);
+        Swal.close();
+      });
+      document.getElementById('pay-momo')?.addEventListener('click', () => {
+        handleMoMoPayOrder(orderId);
+        Swal.close();
+      });
+      document.getElementById('pay-wallet')?.addEventListener('click', () => {
+        handlePayWithWallet(orderId, orders.totalAmount);
+        Swal.close();
+      });
+    }
+  });
+  };
+
   const fetchUser = async () => {
     const response = await api.get('/auth/me');
     setUser(response.data);
@@ -68,13 +114,10 @@ const AccountPage = () => {
     setOrders(response.data);
   };
 
-
   useEffect(() => {
     fetchUser();
     fetchOrders();
   }, []);
-  // BỔ SUNG: useEffect để fetch data C2C (hoàn toàn mới)
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -102,7 +145,7 @@ const AccountPage = () => {
           window.location.reload();
         }
       });
-      fetchUser(); 
+      fetchUser(); // Refresh user data
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error(`Có lỗi xảy ra khi cập nhật thông tin!`, {
@@ -112,19 +155,6 @@ const AccountPage = () => {
     }
   };
 
-  const handlePayWithVNPay = async (orderId: string) => {
-    try {
-      const response = await api.post("/payment/create", {
-        orderId: orderId,
-        amount: orders.find(order => order.orderId === orderId)?.totalAmount
-      });
-      window.location.href = response.data;
-      
-    } catch (error) {
-      console.error('Error paying order:', error);
-      toast.error('Có lỗi xảy ra khi thanh toán đơn hàng!');
-    }
-  };
   const handlePayWithWallet = async (orderId: string, amount: number) => {
     if (!user) {
       toast.error("Không thể xác định người dùng. Vui lòng tải lại trang.");
@@ -174,80 +204,59 @@ const AccountPage = () => {
     }
   };
 
-
-  // Hàm MỚI để hiển thị Modal lựa chọn
-  const showPaymentModal = (order: Order) => {
-    const orderId = order.orderId;
-    const totalAmount = order.totalAmount;
-
-    const formattedTotalAmount = formatCurrency(totalAmount);
-
-    Swal.fire({
-      title: 'Chọn phương thức thanh toán',
-      html: `
-        <div class="payment-modal-info">
-          <p>Đơn hàng: <strong>#${orderId}</strong></p>
-
-          <p>Tổng tiền: <strong>${formattedTotalAmount}</strong></p> 
-        </div>
-        
-        <div class="payment-methods-container">
-          <button id="pay-wallet" class="swal2-confirm swal2-styled btn-payment-wallet">
-            Thanh toán bằng Ví Prime
-          </button>
-          
-          <button id="pay-vnpay" class="swal2-confirm swal2-styled btn-payment-vnpay">
-            Thanh toán qua VNPay
-          </button>
-          
-          <button id="pay-momo" class="swal2-confirm swal2-styled btn-payment-momo" disabled>
-            Thanh toán qua Momo (Sắp ra mắt)
-          </button>
-        </div>
-      `,
-      showConfirmButton: false, // Ẩn nút "OK" mặc định
-      showCancelButton: true,
-      cancelButtonText: 'Huỷ bỏ',
+  const handleVnPayPayOrder = async (orderId: string) => {
+    try {
+      const response = await api.post("/payment/vnpay/create", {
+        orderId: orderId,
+        amount: orders.find(order => order.orderId === orderId)?.totalAmount
+      });
+      window.location.href = response.data.paymentUrl;
+      console.log(response.data)
       
-      didOpen: () => {
-        const modal = Swal.getHtmlContainer();
-        
-        modal?.querySelector('#pay-wallet')?.addEventListener('click', () => {
-          handlePayWithWallet(orderId, totalAmount);
-        });
-
-        modal?.querySelector('#pay-vnpay')?.addEventListener('click', () => {
-          handlePayWithVNPay(orderId, totalAmount);
-        });
-      }
-    });
+    } catch (error) {
+      console.error('Error paying order:', error);
+      toast.error('Có lỗi xảy ra khi thanh toán đơn hàng!');
+    }
   };
 
-const handleReceiveOrder = async (orderId: string) => {
-  try {
-    // 1. Gọi API để cập nhật trạng thái thành DONE
-    await api.put(`/order/update-status?id=${orderId}&status=DONE`);
+  const handlePaypalPayOrder = async (orderId) => {
+    try {
+      const res = await api.post("/payment/paypal/create", { orderId });
+      const { links } = res.data;
+      window.location.href = links[0];
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      } else {
+        console.error(error.message);
+      }
+      toast.error("Có lỗi xảy ra khi thanh toán đơn hàng!");
+    }
+  };
 
-    // 2. Tải lại danh sách đơn hàng
-    // Đơn hàng này bây giờ là DONE, không còn là DELIVERED
-    await fetchOrders(); 
-    // Khi React render lại, điều kiện {order.status === 'DELIVERED'} sẽ là FALSE
-    // => Nút "Đã nhận hàng" sẽ tự động biến mất.
-
-    // 3. Thông báo thành công
-    Swal.fire({
-      icon: 'success',
-      title: 'Đã nhận hàng!',
-      text: 'Đơn hàng đã được hoàn tất. Cảm ơn bạn đã mua sắm!',
-      confirmButtonText: 'OK',
-    });
-
-  } catch (error) {
-    console.error('Error receiving order (setting to DONE):', error);
-    toast.error('Có lỗi xảy ra khi xác nhận nhận hàng!');
+  const handleMoMoPayOrder = async (orderId) => {
+    try {
+      const res = await api.post("/payment/momo/create", { orderId });
+      const { payUrl } = res.data;
+      window.location.href = payUrl;
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+      } else {
+        console.error(error.message);
+      }
+      toast.error("Có lỗi xảy ra khi thanh toán đơn hàng!");
+    }
   }
-};
 
+  const handleReceiveOrder = async (orderId: string) => {
+    try {
+      await api.put(`/order/update-status?id=${orderId}&status=DELIVERED`);
+      fetchOrders();
+    } catch (error) {
+      console.error('Error receiving order:', error);
+    }
+  };
 
   return (
     <section className="account-page">
@@ -412,7 +421,7 @@ const handleReceiveOrder = async (orderId: string) => {
                       })()}
                     </span>
                     {order.orderStatus === 'CONFIRMED' && (
-                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => showPaymentModal(order)}>Thanh toán</Button>
+                      <Button variant="contained" color="success" style={{marginRight: '8px'}} onClick={() => showPaymentMethod(order)}>Thanh toán</Button>
                     )}
                     <Button variant="contained" color="primary" onClick={() => showOrderDetails(order)}>Xem chi tiết</Button>
                     {order.orderStatus === 'DELIVERED' && (

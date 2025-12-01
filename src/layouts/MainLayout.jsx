@@ -14,7 +14,6 @@ import OrderTrackingPages from "../pages/OrderTrackingPage";
 import AccountPage from "../pages/AccountPage";
 import WishList from "../pages/WishListPage";
 import ProductsDetailsPage from "../pages/product/ProductsDetails";
-
 import Header from "../components/header";
 import Footer from "../components/footer";
 

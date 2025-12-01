@@ -62,6 +62,7 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
     try {
       const response = await sellerApi.getMyBusinessProfile();
       setSellerProfile(response.data);
+      console.log('Seller Profile: ', response.data);
     } catch (error: any) {
       if (error.response?.status === 404) setSellerProfile(null);
       else toast.error('Lỗi khi tải dữ liệu Business Profile.');
@@ -221,7 +222,7 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
         </Button>
       </div>
     );
-
+    console.log(sellerProfile.status);
   if (sellerProfile.status === 'PENDING_REVIEW')
     return (
       <div className="activate-wallet-container">

@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styles from "./styles/ProductCard.module.css";
 import { components } from "../../types/api-types";
 import { Review } from "../../types/review";
+// import { ProductCardType } from "../../types/product";
 
 export type Product = components["schemas"]["ProductResponse"]
 export type ProductSpecs = components["schemas"]["ProductSpecResponse"]
