@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 1. Lấy đường dẫn từ biến môi trường (File .env)
 // Nếu không tìm thấy biến môi trường thì fallback về localhost (để phòng hờ lỗi quên tạo file .env)
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://localhost:8080";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://backend-primeshop.onrender.com";
 
 const api = axios.create({
     // 2. Nối thêm đuôi /api vào Base URL

@@ -10,7 +10,7 @@ class WSChatClient {
   connect(onConnected: () => void, onMessageReceived: (msg: any) => void) {
     const token = localStorage.getItem("token");
     this.client = new Client({
-      webSocketFactory: () => new SockJS("https://localhost:8080/ws"),
+      webSocketFactory: () => new SockJS("https://backend-primeshop.onrender.com/ws"),
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },

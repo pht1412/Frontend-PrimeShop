@@ -54,7 +54,7 @@ const VoucherInput: React.FC<VoucherInputProps> = ({
 
         try {
             const response = await axios.post<VoucherValidationResponse>(
-                'http://localhost:8080/api/vouchers/validate',
+                'https://backend-primeshop.onrender.com/api/vouchers/validate',
                 {
                     code: voucherCode.trim().toUpperCase(),
                     orderValue: orderValue

@@ -16,7 +16,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://localhost:8080",
+        target: "https://backend-primeshop.onrender.com",
         changeOrigin: true,
         secure: false,
       }
