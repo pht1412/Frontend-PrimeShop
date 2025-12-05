@@ -74,6 +74,12 @@ const AdminLayout = ({ children }) => {
                 Nhập hàng
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/admin/business-manager" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Quản lý doanh nghiệp
+              </NavLink>
+            </li>
+
           </ul>
         </nav>
       </aside>

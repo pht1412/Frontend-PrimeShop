@@ -10,294 +10,305 @@ import { Review } from "../../types/review";
 import { Button, Card, CardContent, TextField } from "@mui/material";
 import StarRatings from 'react-star-ratings';
 import Swal from "sweetalert2";
-import sellerStyles from "./styles/SellerProfile.module.css";
+import { FaShoppingCart, FaCreditCard, FaCommentDots, FaStore, FaStar, FaCircle } from "react-icons/fa";
 
-const mockPromotions = [
-  "🎁 Giảm ngay 500.000đ khi thanh toán qua Momo.",
-  "🚀 Miễn phí giao hàng toàn quốc.",
-  "💳 Trả góp 0% qua thẻ tín dụng.",
-  "📦 Đổi trả miễn phí trong 7 ngày.",
-  "🎧 Tặng tai nghe khi mua trong hôm nay.",
-];
+// --- CẬP NHẬT INTERFACE ---
+interface Seller {
+  id: number;          // Đây là Shop ID (Ví dụ: 302)
+  userId: number;      // <--- THÊM DÒNG NÀY: ID của User chủ shop (Ví dụ: 10016)
+  shopName: string;
+  avatar?: string;
+  identityCard?: string;
+}
+
+interface ProductDetail extends Product {
+  seller: Seller;
+  description?: string;
+  specs?: { name: string; value: string }[];
+}
 
 const ProductDetailPage: React.FC = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCartStore();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<ProductDetail | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [rating, setRating] = useState<number>(0);
   const [reviewContent, setReviewContent] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await api.get(`/product/product-detail/${slug}`);
-        setProduct(res.data);
-        setLoading(true);
-      } catch (err) {
-        setLoading(false);
-        console.log("Lỗi khi lấy sản phẩm:", err);
-        navigate("/not-found");
-      }
-    };
-
-    const fetchProductImages = async () => {
-      try {
-        const res = await api.get(`/product/images/${slug}`);
-        setProductImages(res.data);
-      } catch (err) {
-        console.log("Lỗi khi lấy hình ảnh sản phẩm:", err);
-      }
-    };
-
-    const fetchReviews = async () => {
-      try {
-        const res = await api.get('/review', { params: { productSlug: slug } });
-        setReviews(res.data);
-      } catch (err) {
-        console.log("Lỗi khi lấy đánh giá:", err);
-      }
-    };
-    fetchProduct();
-    fetchProductImages();
-    fetchReviews();
-  }, [slug]);
-
+  const [loading, setLoading] = useState<boolean>(true);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
+  // Fetch Data Logic
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productRes, imagesRes, reviewsRes] = await Promise.all([
+          api.get(`/product/product-detail/${slug}`),
+          api.get(`/product/images/${slug}`).catch(() => ({ data: [] })),
+          api.get('/review', { params: { productSlug: slug } }).catch(() => ({ data: [] }))
+        ]);
+
+        setProduct(productRes.data);
+        setProductImages(imagesRes.data);
+        setReviews(reviewsRes.data);
+        
+        // --- LOG KIỂM TRA (DEBUG) ---
+        console.log("🛒 Dữ liệu Seller nhận được:", productRes.data.seller);
+        if (!productRes.data.seller.userId) {
+             console.warn("⚠️ CẢNH BÁO: API chưa trả về userId của Seller! Vui lòng kiểm tra Backend Product.");
+        }
+        // ----------------------------
+
+      } catch (err) {
+        console.error("Lỗi tải dữ liệu chi tiết:", err);
+        navigate("/not-found");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (slug) fetchData();
+  }, [slug, navigate]);
+
+  // Handlers
   const handleAddToCart = async () => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    if (!token) return navigate('/login');
 
     try {
-      const res = await api.post("/cart/add", {
-        productSlug: product?.slug,
-        quantity: 1
-      });
-      toast.success(`Đã thêm ${product?.name} vào giỏ hàng!`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      await api.post("/cart/add", { productSlug: product?.slug, quantity: 1 });
+      addToCart({ ...product, quantity: 1 } as any); 
+      toast.success(`Đã thêm vào giỏ hàng!`);
     } catch (err) {
-      console.error("Lỗi thêm vào giỏ hàng:", err);
-      toast.error("Không thể thêm sản phẩm vào giỏ.");
+      toast.error("Lỗi khi thêm vào giỏ hàng.");
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    if (!token) return navigate('/login');
     handleAddToCart();
     navigate("/cart");
   };
 
-  const handleImageChange = (index: number) => {
-    setCurrentImageIndex(index);
-  };
+  // --- SỬA LOGIC CHAT TẠI ĐÂY ---
+  const handleChatWithShop = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        toast.info("Vui lòng đăng nhập để chat với Shop!");
+        return navigate('/login');
+    }
+
+    // Validate dữ liệu quan trọng
+    if (!product?.seller.userId) {
+        console.error("❌ Lỗi: Không tìm thấy User ID của chủ shop. Dữ liệu seller:", product?.seller);
+        toast.error("Lỗi hệ thống: Không xác định được chủ shop.");
+        return;
+    }
+    
+    try {
+        toast.info("Đang kết nối...");
+        
+        // SỬA: Gửi userId (10016) thay vì id (302)
+        const res = await api.post('/chat/create', null, { 
+            params: { sellerId: product.seller.userId } 
+        });
+
+        // Phát sự kiện Global
+        const chatEvent = new CustomEvent('PRIMESHOP_OPEN_CHAT', { detail: res.data });
+        window.dispatchEvent(chatEvent);
+
+    } catch (error) {
+        console.error("Lỗi tạo hội thoại:", error);
+        toast.error("Không thể kết nối với Shop lúc này.");
+    }
+};
 
   const handleSubmitReview = async () => {
+    if (!rating) return toast.warning("Vui lòng chọn số sao đánh giá!");
     try {
-      const response = await api.post("/review", {
-        productSlug: product?.slug,
-        rating: rating,
-        content: reviewContent
-      });
-      Swal.fire({
-        title: "Cảm ơn bạn đã đánh giá sản phẩm! Chúng tôi xin ghi nhận đánh giá của bạn.",
-        icon: "success",
-        confirmButtonText: "OK"
-      }).then(() => {
-        window.location.reload();
-      });
+      await api.post("/review", { productSlug: product?.slug, rating, content: reviewContent });
+      Swal.fire("Thành công!", "Cảm ơn đánh giá của bạn.", "success").then(() => window.location.reload());
     } catch (err) {
-      console.error("Lỗi khi gửi đánh giá:", err);
       toast.error("Không thể gửi đánh giá.");
     }
   };
 
-  const [showAll, setShowAll] = useState(false);
+  if (loading || !product) {
+    return <div className={styles.productPage}><div style={{textAlign:'center', marginTop: 100}}>Đang tải...</div></div>;
+  }
 
-  if (loading) {
-    return (
-      <div className={styles.productPage}>
-        <ToastContainer />
-        <section className={styles.productOverview}>
-          <div className={styles.productImages}>
-            <div className={styles.mainImage}>
-              <img
-                src={productImages[currentImageIndex] || product?.imageUrl}
-                alt={product?.name}
-              />
+  const displayImage = productImages[currentImageIndex] || product.imageUrl || "https://via.placeholder.com/400";
+  const sellerAvatar = product.seller.identityCard || "https://cdn-icons-png.flaticon.com/512/1041/1041846.png"; 
+
+  return (
+    <div className={styles.productPage}>
+      <ToastContainer position="top-right" autoClose={2000} />
+      
+      <section className={styles.productOverview}>
+        <div className={styles.productImages}>
+          <div className={styles.mainImage}>
+            <img src={displayImage} alt={product.name} />
+          </div>
+          <div className={styles.thumbnailImages}>
+            {productImages.slice(0, 5).map((img, index) => (
+              <button
+                key={index}
+                className={`${styles.thumbnailButton} ${currentImageIndex === index ? styles.thumbnailActive : ""}`}
+                onClick={() => setCurrentImageIndex(index)}
+              >
+                <img src={img} alt="thumb" className={styles.thumbnail} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.productInfo}>
+          <h1>{product.name}</h1>
+          
+          <div className={styles.metaInfo}>
+            <div className={styles.rating}>
+              <span className={styles.starIcon}><FaStar /></span>
+              <span>{reviews.length > 0 ? (reviews.reduce((a, b) => a + b.rating, 0) / reviews.length).toFixed(1) : "5.0"}</span>
+              <span style={{color: '#d1d5db'}}>|</span>
+              <span>{reviews.length} Đánh giá</span>
             </div>
-            <div className={styles.thumbnailImages}>
-              {productImages.slice(0, 3).map((image, index) => (
-                <button
-                  key={image}
-                  className={`${styles.thumbnailButton} ${
-                    currentImageIndex === index ? styles.thumbnailActive : ""
-                  }`}
-                  onClick={() => handleImageChange(index)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      handleImageChange(index);
-                    }
-                  }}
-                  aria-label={`Select thumbnail ${index + 1}`}
-                >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={styles.thumbnail}
-                  />
-                </button>
-              ))}
+            <div className={styles.soldCount}>
+              Đã bán {product.sold >= 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}
             </div>
           </div>
-          <div className={styles.productInfo}>
-            <h1>{product?.name}</h1>
-            {product?.isDiscounted ? (
+
+          <div className={styles.priceWrapper}>
+            {product.isDiscounted ? (
               <>
-                <p className={styles.price}>{product?.discountPrice?.toLocaleString("vi-VN")}₫</p>
-                <div className={styles.priceInfo}>
-                  <span className={styles.originalPrice}>
-                    {product?.price?.toLocaleString("vi-VN")}₫
-                  </span>
-                  <span className={styles.discount}>-{product?.discountPercent}%</span>
-                </div>
+                <span className={styles.originalPrice}>{product.price.toLocaleString("vi-VN")}₫</span>
+                <span className={styles.currentPrice}>{product.discountPrice?.toLocaleString("vi-VN")}₫</span>
+                <span className={styles.discountBadge}>GIẢM {product.discountPercent}%</span>
               </>
             ) : (
-              <p className={styles.price}>{product?.price?.toLocaleString("vi-VN")}₫</p>
+              <span className={styles.currentPrice}>{product.price.toLocaleString("vi-VN")}₫</span>
             )}
-            <p className={styles.rating}>
-              {reviews.length > 0 ? `${(reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)} • ` : 'Chưa có đánh giá • '}
-              Đã bán {product?.sold && product?.sold >= 1000 ? `${(product?.sold / 1000).toFixed(1)}K` : product?.sold}
-            </p>
-            <div className={styles.actions}>
-              <button className={styles.buyNow} onClick={handleBuyNow}>
-                Mua ngay
-              </button>
-              <button className={styles.addToCart} onClick={handleAddToCart}>
-                Thêm vào giỏ hàng
-              </button>
+          </div>
+
+          <div className={styles.sellerSection}>
+            <div className={styles.sellerContainer}>
+                <div className={styles.sellerProfile}>
+                    <img src={sellerAvatar} alt={product.seller.shopName} className={styles.sellerAvatar} />
+                    <div className={styles.sellerInfo}>
+                        <h3>{product.seller.shopName}</h3>
+                        <span className={styles.sellerStatus}>
+                            <FaCircle size={8} /> Online
+                        </span>
+                    </div>
+                </div>
+                <div className={styles.sellerActions}>
+                    <button className={styles.btnChat} onClick={handleChatWithShop}>
+                        <FaCommentDots /> Chat Ngay
+                    </button>
+                    <button className={styles.btnViewShop} onClick={() => navigate(`/shop/${product.seller.id}`)}>
+                        <FaStore /> Xem Shop
+                    </button>
+                </div>
             </div>
           </div>
-          <div className={styles.promotions}>
-            <h3>🎉 Khuyến mãi khi mua hàng</h3>
-            <ul>
-              {mockPromotions.map((promo) => (
-                <li key={promo}>{promo}</li>
-              ))}
-            </ul>
+
+          <div className={styles.actions}>
+            <button className={styles.addToCart} onClick={handleAddToCart}>
+              <FaShoppingCart /> Thêm vào giỏ
+            </button>
+            <button className={styles.buyNow} onClick={handleBuyNow}>
+              <FaCreditCard /> Mua ngay
+            </button>
           </div>
-        </section>
-        <section className={styles.productDetails}>
-          <div className={sellerStyles.sellerInfoCard}>
-            {/* 1. Phần Avatar */}
-            <img 
-                src={product?.seller.identityCard} // <-- Dùng avatar, KHÔNG dùng CCCD
-                alt={product?.seller.shopName}
-                className={sellerStyles.avatar}
+        </div>
+      </section>
+
+      {/* CÁC SECTION KHÁC GIỮ NGUYÊN */}
+      <section className={styles.contentGrid}>
+         <div className={styles.sectionBox}>
+            <h2 className={styles.sectionTitle}>Mô tả sản phẩm</h2>
+            <div className={styles.descriptionText}>
+                {product.description || "Đang cập nhật mô tả..."}
+            </div>
+         </div>
+
+         <div className={styles.sectionBox}>
+            <h2 className={styles.sectionTitle}>Thông số kỹ thuật</h2>
+            <ul className={styles.specsList}>
+                {product.specs?.length > 0 ? product.specs.map((spec, idx) => (
+                    <li key={idx}>
+                        <strong>{spec.name}</strong>
+                        <span>{spec.value}</span>
+                    </li>
+                )) : (
+                    <li><em>Chưa có thông số chi tiết</em></li>
+                )}
+            </ul>
+         </div>
+      </section>
+
+      <section className={styles.sectionBox}>
+         <h2 className={styles.sectionTitle}>Đánh giá ({reviews.length})</h2>
+         
+         <div style={{marginBottom: '2rem', background: '#f9fafb', padding: '1.5rem', borderRadius: 8}}>
+            <h4 style={{marginTop: 0, marginBottom: '1rem'}}>Viết đánh giá của bạn</h4>
+            <div style={{marginBottom: '1rem'}}>
+                <StarRatings
+                    rating={rating}
+                    starRatedColor="#f59e0b"
+                    starHoverColor="#f59e0b"
+                    changeRating={setRating}
+                    numberOfStars={5}
+                    starDimension="24px"
+                    starSpacing="2px"
+                />
+            </div>
+            <TextField
+                fullWidth
+                multiline
+                rows={3}
+                variant="outlined"
+                placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."
+                value={reviewContent}
+                onChange={(e) => setReviewContent(e.target.value)}
+                style={{background: 'white'}}
             />
-            
-            {/* 2. Phần thông tin text */}
-            <div className={sellerStyles.info}>
-                <h3 className={sellerStyles.shopName}>{product?.seller.shopName}</h3>
-                
-                <p className={sellerStyles.description}>{product?.seller.description}</p>
-                
-                <p className={sellerStyles.phone}>Liên hệ: {product?.seller.phone}</p>
-                
-                {/* Chúng ta sẽ biến status thành một cái "badge" (nhãn) */}
-                <div className={sellerStyles.statusWrapper}>
-                    Trạng thái: 
-                    <span 
-                        className={`${sellerStyles.statusBadge} ${
-                            product?.seller.status === 'VERIFIED_SELLER' 
-                            ? sellerStyles.active 
-                            : sellerStyles.inactive
-                        }`}
-                    >
-                        {product?.seller.status}
-                    </span>
-                </div>
-            </div>
-        </div>
-        </section>
-        <section className={styles.productDetails}>
-          <div className={styles.description}>
-            <h2>Thông tin sản phẩm</h2>
-            <p>{product?.description}</p>
-          </div>
-          <div className={styles.specifications}>
-            <h2>Thông số kỹ thuật</h2>
-            <ul>
-              {product?.specs?.map((spec, index) => (
-                <li key={index}>
-                  <strong>{spec.name}:</strong> <span>{spec.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-        <div className={styles.specifications}>
-          <h2>Đánh giá và phản hồi</h2>
-          <TextField
-            id="outlined-multiline-flexible"
-            label="Nhập đánh giá và phản hồi"
-            multiline
-            maxRows={4}
-            value={reviewContent}
-            onChange={(e) => setReviewContent(e.target.value)}
-            fullWidth
-            variant="outlined"
-            margin="normal"
-          />
-          <StarRatings
-            rating={rating}
-            starRatedColor="orange"
-            starEmptyColor="gray"
-            starHoverColor="orange"
-            numberOfStars={5}
-            name="rating"
-            starDimension="25px"
-            starSpacing="2px"
-            changeRating={setRating}
-          />
-          <div style={{ marginTop: "1rem" }}>
-            <Button variant="contained" color="primary" onClick={handleSubmitReview}>
-              Gửi đánh giá
+            <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handleSubmitReview}
+                style={{marginTop: '1rem', textTransform: 'none', fontWeight: 600}}
+            >
+                Gửi đánh giá
             </Button>
-          </div>
-          <Card sx={{ border: "1px solid #ccc", borderRadius: "5px", padding: "8px", marginTop: "1rem" }}>
-            {reviews.length > 0 ? (
-              reviews.map((review) => (
+         </div>
+
+         <div>
+            {reviews.length > 0 ? reviews.map(review => (
                 <div key={review.id} className={styles.reviewCard}>
-                  <CardContent>
-                    <img src={"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} width={40} height={40} style={{ borderRadius: "50%", verticalAlign: "middle", marginRight: "1rem" }} alt={review.username} />
-                    <strong>{review.username}</strong>
-                    {Array(review.rating).fill("⭐").join("")}
-                    <p>{review.content}</p>
-                  </CardContent>
+                    <div className={styles.reviewHeader}>
+                        <img 
+                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                            alt="user" 
+                            className={styles.reviewAvatar} 
+                        />
+                        <div>
+                            <span className={styles.reviewName}>{review.username || "Người dùng ẩn danh"}</span>
+                            <div style={{fontSize: 12, color: '#f59e0b'}}>
+                                {Array(review.rating).fill("★").join("")}
+                            </div>
+                        </div>
+                    </div>
+                    <p className={styles.reviewContent}>{review.content}</p>
                 </div>
-              ))
-            ) : (
-              <p>Chưa có đánh giá nào</p>
+            )) : (
+                <p style={{color: '#6b7280', fontStyle: 'italic'}}>Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
             )}
-          </Card>
-        </div>
-      </div>
-    );
-  }
-  return null;
+         </div>
+      </section>
+    </div>
+  );
 };
 
 export default ProductDetailPage;

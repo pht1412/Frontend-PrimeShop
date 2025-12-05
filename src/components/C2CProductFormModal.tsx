@@ -1,39 +1,30 @@
 // Vị trí: src/components/C2CProductFormModal.tsx
 import React, { useState, useEffect } from 'react';
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField, 
-  Button, 
-  MenuItem, 
-  FormControl, 
-  InputLabel, 
-  Select,
-  Grid
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Button, MenuItem, FormControl, InputLabel, Select, Grid,
+  IconButton, Typography, Box, CircularProgress
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
+// Nếu chưa cài @mui/icons-material, hãy cài hoặc thay bằng react-icons
+import { Delete as DeleteIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material'; 
 import '../assets/css/c2c-form-modal.css'; 
 
-// === FIX 1: "ĐỊNH NGHĨA" "LẠI" "TYPE" (VÌ "ĐÃ" "XÓA" "IMPORT" "MOCK") ===
+// Định nghĩa kiểu dữ liệu cho Tình trạng
 type C2CProductCondition = 'new' | 'like_new' | 'used' | 'for_parts';
 
-// === FIX 2: "ĐỊNH NGHĨA" "TYPE" "CHUẨN" $10k/hr (THAY "any") ===
-// "Đây" "là" "cái" "khuôn" "cho" "Form" "của" "chúng ta"
 interface IC2CFormData {
   name: string;
   description: string;
   price: number;
-  brand: string | null;
-  images: string[]; // "Form" "dùng" "cái" "này" "để" "load" "vào" "useEffect"
-  category_id: string; // "Form" "dùng" "string"
-  condition: C2CProductCondition; // "Ăn" "theo" "Fix 1"
+  brand: string;
+  images: string[];
+  category_id: string;
+  condition: C2CProductCondition;
   location: string;
-  stock: number; // ✅ BỔ SUNG TRƯỜNG CÒN THIẾU
+  stock: number;
 }
 
-// "Props" "vẫn" "dùng" "any" "cho" "productToEdit" "vì" "logic" "fake" "ở" "C2CTab"
 interface C2CFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -41,78 +32,113 @@ interface C2CFormModalProps {
   productToEdit: any | null; 
 }
 
-// "FIX 2": "SỬA" "any" "THÀNH" "TYPE" "XỊN" "IC2CFormData"
+// Giá trị mặc định khi tạo mới
 const defaultEmptyProduct: IC2CFormData = { 
-  name: '',
-  description: '',
-  price: 0,
-  brand: '',
+  name: '', 
+  description: '', 
+  price: 0, 
+  brand: '', 
   images: [], 
-  category_id: '',
-  condition: 'used', // "Mặc định"
-  location: '',
-  stock: 1, // ✅ BỔ SUNG TRƯỜNG CÒN THIẾU (mặc định là 1)
+  category_id: '', 
+  condition: 'used', // Mặc định là 'Đã qua sử dụng'
+  location: '', 
+  stock: 1,
 };
 
 const C2CProductFormModal: React.FC<C2CFormModalProps> = ({ isOpen, onClose, onSave, productToEdit }) => {
-  
-  // "FIX 2": "TYPE" "HÓA" "CÁI" "STATE" "NÀY"
   const [formData, setFormData] = useState<IC2CFormData>(defaultEmptyProduct);
-  const [imageInput, setImageInput] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
-  // "useEffect" "giờ" "chuẩn" "type"
   useEffect(() => {
-    if (productToEdit) {
-      setFormData(productToEdit); // "productToEdit" (any) "vẫn" "được" "nhét" "vào" "state" (IC2CFormData)
-      setImageInput(productToEdit.images.join(', '));
-    } else {
-      setFormData(defaultEmptyProduct);
-      setImageInput('');
+    if (isOpen) {
+      if (productToEdit) {
+        // [QUAN TRỌNG] Merge dữ liệu edit vào form
+        // Parent (C2CTab) đã xử lý việc bóc tách specs -> condition/location
+        // Ta chỉ việc hiển thị nó ra
+        setFormData({
+            ...defaultEmptyProduct, // Giữ các default để tránh undefined
+            ...productToEdit,       // Ghi đè bằng dữ liệu thật
+            // Đảm bảo không bị null/undefined làm crash Select box
+            condition: productToEdit.condition || 'used', 
+            location: productToEdit.location || '',
+            brand: productToEdit.brand || '',
+        });
+      } else {
+        setFormData(defaultEmptyProduct);
+      }
     }
   }, [productToEdit, isOpen]);
 
-  // "handleChange" (FIX 2) -> "prev" "giờ" "đã" "có" "type" "IC2CFormData" -> "HẾT" "LỖI"
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      // ✅ CẬP NHẬT: Thêm "stock" vào logic parse số
       [name]: (name === 'price' || name === 'stock') ? parseFloat(value) : value,
     }));
   };
 
-  // "handleSelectChange" (FIX 2) -> "prev" "giờ" "đã" "có" "type" -> "HẾT" "LỖI"
   const handleSelectChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name as string]: value }));
+  };
+
+  // === UPLOAD ẢNH LÊN CLOUDINARY ===
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      setIsUploading(true);
+
+      try {
+        const uploadPromises = files.map(async (file) => {
+          const data = new FormData();
+          data.append("file", file);
+          data.append("upload_preset", "primeshop_preset"); 
+          data.append("folder", "prime/ecommerce");
+          data.append("cloud_name", "dapsvdkmt"); 
+
+          const res = await fetch("https://api.cloudinary.com/v1_1/dapsvdkmt/image/upload", {
+            method: "POST",
+            body: data
+          });
+
+          const uploadedImage = await res.json();
+          if (uploadedImage.secure_url) {
+              return uploadedImage.secure_url;
+          } else {
+              throw new Error(uploadedImage.error?.message || "Upload failed");
+          }
+        });
+
+        const newImageUrls = await Promise.all(uploadPromises);
+
+        setFormData(prev => ({
+          ...prev,
+          images: [...prev.images, ...newImageUrls] 
+        }));
+        
+      } catch (error: any) {
+        console.error("Upload error:", error);
+        alert(`Lỗi upload ảnh: ${error.message}`);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
     setFormData(prev => ({
       ...prev,
-      [name as string]: value,
+      images: prev.images.filter((_, index) => index !== indexToRemove)
     }));
   };
-  
-  // "handleImageChange" (Giữ nguyên)
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setImageInput(e.target.value);
-  };
 
-  // "handleSubmit" (Giữ nguyên)
-  // (formData đã tự động có "stock" nên không cần sửa)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const imagesArray = imageInput.split(',').map(img => img.trim()).filter(img => img.length > 0);
-    
-    // "Truyền" "ra" "ngoài"
-    onSave({
-      ...formData,
-      images: imagesArray,
-      // "Mock" "tạm" "mấy" "trường" "này" "vì" "BE" "không" "cần"
-      id: productToEdit?.id || `c2c-${Date.now()}`,
-      sellerId: productToEdit?.sellerId || 'user_123',
-      created_at: productToEdit?.created_at || new Date().toISOString(),
-    });
+    // [CLEAN CODE] Chỉ gửi dữ liệu form, không tự bịa ID hay sellerId
+    // Logic đó thuộc về Parent (C2CTab) hoặc Backend
+    onSave(formData);
   };
 
-  // "conditionOptions" (FIX 1) -> "C2CProductCondition" "giờ" "đã" "tồn tại" -> "HẾT" "LỖI"
   const conditionOptions: { value: C2CProductCondition, label: string }[] = [
     { value: 'new', label: 'Mới 100%' },
     { value: 'like_new', label: 'Như mới 99%' },
@@ -120,7 +146,6 @@ const C2CProductFormModal: React.FC<C2CFormModalProps> = ({ isOpen, onClose, onS
     { value: 'for_parts', label: 'Bán linh kiện/Hỏng' },
   ];
 
-  // ... (Phần return JSX "giữ nguyên" "y hệt") ...
   return (
     <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
@@ -129,41 +154,27 @@ const C2CProductFormModal: React.FC<C2CFormModalProps> = ({ isOpen, onClose, onS
       <form onSubmit={handleSubmit}>
         <DialogContent className="c2c-form-content">
           <Grid container spacing={2}>
+            
             {/* Tên sản phẩm */}
             <Grid item xs={12} md={8}>
-              <TextField
-                name="name"
-                label="Tên sản phẩm (Tiêu đề tin)"
-                value={formData.name}
-                onChange={handleChange}
-                fullWidth
-                required
-                variant="outlined"
-              />
+              <TextField name="name" label="Tên sản phẩm" value={formData.name} onChange={handleChange} fullWidth required variant="outlined" />
             </Grid>
+
             {/* Giá bán */}
             <Grid item xs={12} md={4}>
-              <TextField
-                name="price"
-                label="Giá bán (VND)"
-                type="number"
-                value={formData.price}
-                onChange={handleChange}
-                fullWidth
-                required
-                variant="outlined"
-              />
+              <TextField name="price" label="Giá bán (VND)" type="number" value={formData.price} onChange={handleChange} fullWidth required variant="outlined" />
             </Grid>
-            {/* Tình trạng */}
+
+            {/* [QUAN TRỌNG] Tình trạng - Select Box */}
             <Grid item xs={12} md={6}>
               <FormControl fullWidth variant="outlined" required>
                 <InputLabel id="condition-label">Tình trạng</InputLabel>
-                <Select
-                  labelId="condition-label"
-                  name="condition"
-                  value={formData.condition}
-                  onChange={handleSelectChange}
-                  label="Tình trạng"
+                <Select 
+                    labelId="condition-label" 
+                    name="condition" 
+                    value={formData.condition} 
+                    onChange={handleSelectChange} 
+                    label="Tình trạng"
                 >
                   {conditionOptions.map(opt => (
                     <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
@@ -171,75 +182,98 @@ const C2CProductFormModal: React.FC<C2CFormModalProps> = ({ isOpen, onClose, onS
                 </Select>
               </FormControl>
             </Grid>
-            {/* Vị trí */}
+
+            {/* [QUAN TRỌNG] Vị trí */}
             <Grid item xs={12} md={6}>
-              <TextField
-                name="location"
-                label="Vị trí (Ví dụ: Quận 1, TP.HCM)"
-                value={formData.location}
-                onChange={handleChange}
-                fullWidth
-                required
-                variant="outlined"
-              />
+              <TextField name="location" label="Vị trí / Nơi bán" value={formData.location} onChange={handleChange} fullWidth required variant="outlined" />
             </Grid>
-            
-            {/* ✅ BỔ SUNG TRƯỜNG MỚI (CHIA LẠI GRID) */}
+
+            {/* Thương hiệu */}
             <Grid item xs={12} md={4}>
                <TextField name="brand" label="Thương hiệu" value={formData.brand} onChange={handleChange} fullWidth variant="outlined" />
             </Grid>
-            <Grid item xs={12} md={4}>
-               <TextField name="category_id" label="Danh mục (ID)" value={formData.category_id} onChange={handleChange} fullWidth variant="outlined" />
-            </Grid>
+
+            {/* Danh mục */}
             <Grid item xs={12} md={4}>
                <TextField 
-                name="stock" 
-                label="Số lượng tồn kho" 
-                type="number"
-                value={formData.stock} 
-                onChange={handleChange} 
-                fullWidth 
-                variant="outlined"
-                required
-              />
+                 name="category_id" 
+                 label="Danh mục (ID)" 
+                 value={formData.category_id} 
+                 onChange={handleChange} 
+                 fullWidth 
+                 variant="outlined" 
+                 helperText="VD: 1, 2, 3"
+               />
             </Grid>
-            
+
+            {/* Tồn kho */}
+            <Grid item xs={12} md={4}>
+               <TextField name="stock" label="Số lượng" type="number" value={formData.stock} onChange={handleChange} fullWidth variant="outlined" required />
+            </Grid>
+
             {/* Mô tả */}
             <Grid item xs={12}>
-              <TextField
-                name="description"
-                label="Mô tả chi tiết"
-                value={formData.description}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={5}
-                required
-                variant="outlined"
-              />
+              <TextField name="description" label="Mô tả chi tiết" value={formData.description} onChange={handleChange} fullWidth multiline rows={4} required variant="outlined" />
             </Grid>
-            {/* Link ảnh */}
+
+            {/* Khu vực chọn ảnh */}
             <Grid item xs={12}>
-              <TextField
-                name="images"
-                label="Link hình ảnh (cách nhau bằng dấu phẩy)"
-                value={imageInput}
-                onChange={handleImageChange}
-                fullWidth
-                multiline
-                rows={2}
-                variant="outlined"
-                placeholder="https://link1.jpg, https://link2.jpg, ..."
-                helperText="Sếp ơi! Tạm thời nhập link ảnh. Task sau em làm UI Upload kéo thả 'mlem' hơn nhé!"
-              />
+                <Box sx={{ border: '1px dashed #ccc', borderRadius: 2, p: 2, textAlign: 'center', backgroundColor: '#fafafa' }}>
+                    <input
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id="raised-button-file"
+                        multiple
+                        type="file"
+                        onChange={handleFileChange}
+                    />
+                    <label htmlFor="raised-button-file">
+                        <Button 
+                            variant="outlined" 
+                            component="span" 
+                            startIcon={isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                            disabled={isUploading}
+                        >
+                            {isUploading ? 'Đang tải lên...' : 'Chọn ảnh từ thiết bị'}
+                        </Button>
+                    </label>
+                    <Typography variant="caption" display="block" sx={{ mt: 1, color: '#666' }}>
+                        Tải lên tối đa 5 ảnh. Ảnh đầu tiên sẽ là ảnh đại diện.
+                    </Typography>
+
+                    {/* Preview Image Grid */}
+                    {formData.images.length > 0 && (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2, justifyContent: 'center' }}>
+                            {formData.images.map((imgUrl, index) => (
+                                <Box key={index} sx={{ position: 'relative', width: 100, height: 100 }}>
+                                    <img 
+                                        src={imgUrl} 
+                                        alt={`preview-${index}`} 
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #ddd' }} 
+                                    />
+                                    <IconButton 
+                                        size="small" 
+                                        onClick={() => handleRemoveImage(index)}
+                                        sx={{ 
+                                            position: 'absolute', top: -8, right: -8, 
+                                            backgroundColor: 'white', border: '1px solid #ccc',
+                                            '&:hover': { backgroundColor: '#ffebee' } 
+                                        }}
+                                    >
+                                        <DeleteIcon fontSize="small" color="error" />
+                                    </IconButton>
+                                </Box>
+                            ))}
+                        </Box>
+                    )}
+                </Box>
             </Grid>
+
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="secondary">
-            Huỷ bỏ
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
+          <Button onClick={onClose} color="secondary">Huỷ bỏ</Button>
+          <Button type="submit" variant="contained" color="primary" disabled={isUploading}>
             {productToEdit ? 'Lưu thay đổi' : 'Đăng tin'}
           </Button>
         </DialogActions>

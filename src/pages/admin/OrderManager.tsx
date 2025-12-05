@@ -14,8 +14,6 @@ import {
   TextField,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
   Button
 } from "@mui/material";
 import Swal from "sweetalert2";
@@ -24,7 +22,6 @@ import dayjs from "dayjs";
 const OrderManager = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [filters, setFilters] = useState({
     orderId: "",
     status: "all",
@@ -32,9 +29,6 @@ const OrderManager = () => {
     startDate: "",
     endDate: ""
   });
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editOrder, setEditOrder] = useState<Order | null>(null);
-  const [orderDetails, setOrderDetails] = useState<Order | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -51,94 +45,86 @@ const OrderManager = () => {
           endDate: filters.endDate ? dayjs(filters.endDate).format("YYYY-MM-DDTHH:mm:ss") : undefined
         }
       });
+
+      console.log("📦 Orders:", response.data);
       setOrders(response.data);
-      setFilteredOrders(response.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Lỗi",
-        text: "Không thể tải danh sách đơn hàng",
-        confirmButtonText: "OK"
-      });
+      Swal.fire("Lỗi", "Không thể tải danh sách đơn hàng", "error");
     }
   };
 
+  // ============================
+  // SHOW DETAILS POPUP
+  // ============================
   const showDetails = (order: Order) => {
-  Swal.fire({
-    title: `Chi tiết đơn hàng #${order.orderId}`,
-    html: `
-      <p><strong>Người nhận:</strong> ${order.fullName}</p>
-      <p><strong>Số điện thoại:</strong> ${order.phoneNumber}</p>
-      <p><strong>Địa chỉ:</strong> ${order.address}</p>
-      <p><strong>Ghi chú:</strong> ${order.note || "Không có"}</p>
-      <p><strong>Ngày đặt:</strong> ${order.createdAt.split("T")[0]}</p>
-      <p><strong>Tổng tiền:</strong> ${order.totalAmount.toLocaleString("vi-VN", {style:"currency", currency:"VND"})}</p>
-      <p><strong>Sản phẩm:</strong></p>
-      <ul>
-        ${order.items && order.items.length > 0
-          ? order.items.map(item => 
-              `<li>${item.productName} - Số lượng: ${item.quantity}</li>`
-            ).join("")
-          : "<li>Không có sản phẩm</li>"
-        }
-      </ul>
-    `,
-    confirmButtonText: "Đóng"
-  });
-};
+    const finalPrice = order.finalAmount ?? order.totalAmount;
+    const discount = order.totalAmount - finalPrice;
 
+    Swal.fire({
+      title: `Chi tiết đơn hàng #${order.orderId}`,
+      html: `
+        <div style="text-align:left;font-size:0.95rem;line-height:1.6;">
 
+            <div style="background:#f5f5f5;padding:10px;border-radius:8px;margin-bottom:10px;">
+                <p><strong>Khách hàng:</strong> ${order.fullName}</p>
+                <p><strong>SĐT:</strong> ${order.phoneNumber}</p>
+                <p><strong>Địa chỉ:</strong> ${order.address}</p>
+                <p><strong>Ngày đặt:</strong> ${new Date(order.createdAt).toLocaleString("vi-VN")}</p>
+            </div>
+
+            <p><strong>Sản phẩm:</strong></p>
+            <ul style="padding-left:20px;margin-bottom:15px;">
+              ${order.items?.map(item => 
+                `<li>${item.productName} 
+                    <span style="color:#666;font-size:0.9em">(x${item.quantity})</span>
+                 </li>`
+              ).join("") || "<li>Không có dữ liệu</li>"}
+            </ul>
+
+            <hr />
+            <div style="display:flex;justify-content:space-between;">
+                <span>Tổng tiền hàng:</span>
+                <span>${order.totalAmount.toLocaleString("vi-VN")} đ</span>
+            </div>
+
+            ${discount > 0 ? `
+            <div style="display:flex;justify-content:space-between;color:#2e7d32;">
+                <span>Giảm giá (Voucher):</span>
+                <span>-${discount.toLocaleString("vi-VN")} đ</span>
+            </div>` : ""}
+
+            <div style="display:flex;justify-content:space-between;font-size:1.2em;color:#d32f2f;margin-top:5px;">
+                <strong>THỰC THU:</strong>
+                <strong>${finalPrice.toLocaleString("vi-VN")} đ</strong>
+            </div>
+        </div>
+      `,
+      width: 500,
+      confirmButtonText: "Đóng"
+    });
+  };
+
+  // ============================
+  // UPDATE STATUS
+  // ============================
   const handleApprove = async (orderId: string) => {
     try {
       await api.put(`/admin/order/update-status?id=${orderId}&status=CONFIRMED`);
-      await Swal.fire("Thành công", "Đã duyệt đơn hàng", "success");
+      Swal.fire("Thành công", "Đã duyệt đơn hàng", "success");
       fetchOrders();
     } catch (error) {
-      console.error("Error approving order:", error);
       Swal.fire("Lỗi", "Không thể duyệt đơn hàng", "error");
     }
   };
 
   const handleDelivery = async (orderId: string) => {
-  try {
-    await api.put(`/admin/order/update-status?id=${orderId}&status=PROCESSING`);
-
-    await Swal.fire({
-      title: "Thành công",
-      text: "Đã chuyển đơn hàng sang đơn vị vận chuyển",
-      icon: "success",
-      confirmButtonText: "OK"
-    });
-    
-    // Không điều hướng nữa, chỉ làm mới danh sách đơn
-    fetchOrders();
-  } catch (error) {
-    console.error("Error delivering order:", error);
-    Swal.fire("Lỗi", "Không thể chuyển đơn hàng sang vận chuyển", "error");
-  }
-};
-
-
-  const handleDeliverySuccess = async (orderId: string) => {
     try {
-      await api.put(`/admin/order/update-status?id=${orderId}&status=DELIVERED`);
-      Swal.fire("Thành công", "Cập nhật trạng thái giao hàng thành công", "success");
+      await api.put(`/admin/order/update-status?id=${orderId}&status=PROCESSING`);
+      Swal.fire("Thành công", "Đã chuyển vận chuyển", "success");
       fetchOrders();
     } catch (error) {
-      console.error("Error updating delivery:", error);
-      Swal.fire("Lỗi", "Không thể cập nhật trạng thái giao hàng", "error");
-    }
-  };
-
-  const handleDelete = async (orderId: string) => {
-    try {
-      await api.delete(`/admin/order/delete?id=${orderId}&status=DELETED`);
-      Swal.fire("Thành công", "Đã xóa đơn hàng", "success");
-      fetchOrders();
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      Swal.fire("Lỗi", "Không thể xóa đơn hàng", "error");
+      Swal.fire("Lỗi", "Không thể cập nhật đơn hàng", "error");
     }
   };
 
@@ -146,89 +132,152 @@ const OrderManager = () => {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
+  // ============================
+  // RENDER UI
+  // ============================
   return (
-    <div>
-      <h1>Quản lý đơn hàng</h1>
+    <div style={{ padding: "20px" }}>
+      <h1 style={{ marginBottom: "20px", color: "#1976d2" }}>Quản lý đơn hàng</h1>
 
-      <form className="flex flex-wrap gap-4 mb-4">
+      {/* Filters */}
+      <form style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
         <Select
-          label="Trạng thái"
           value={filters.status}
           onChange={e => handleFilterChange("status", e.target.value)}
-          style={{ minWidth: 150 }}
+          size="small"
+          style={{ minWidth: 150, background: "white" }}
         >
           <MenuItem value="all">Tất cả</MenuItem>
           <MenuItem value="PENDING">Chờ xác nhận</MenuItem>
           <MenuItem value="CONFIRMED">Đã xác nhận</MenuItem>
           <MenuItem value="PAID">Đã thanh toán</MenuItem>
           <MenuItem value="PROCESSING">Đang xử lý</MenuItem>
-          <MenuItem value="SHIPPED">Đang giao</MenuItem>
           <MenuItem value="DELIVERED">Hoàn thành</MenuItem>
           <MenuItem value="CANCELLED">Đã hủy</MenuItem>
         </Select>
 
         <TextField
           label="Mã đơn"
-          type="number"
+          size="small"
           value={filters.orderId}
           onChange={e => handleFilterChange("orderId", e.target.value)}
+          style={{ background: "white" }}
         />
 
         <TextField
           label="Ngày bắt đầu"
           type="date"
+          size="small"
           value={filters.startDate}
           onChange={e => handleFilterChange("startDate", e.target.value)}
           InputLabelProps={{ shrink: true }}
+          style={{ background: "white" }}
         />
 
         <TextField
           label="Ngày kết thúc"
           type="date"
+          size="small"
           value={filters.endDate}
           onChange={e => handleFilterChange("endDate", e.target.value)}
           InputLabelProps={{ shrink: true }}
+          style={{ background: "white" }}
         />
       </form>
 
-      <TableContainer component={Paper}>
+      {/* Table */}
+      <TableContainer component={Paper} elevation={3}>
         <Table>
-          <TableHead>
+          <TableHead style={{ background: "#f5f5f5" }}>
             <TableRow>
-              <TableCell>Mã đơn</TableCell>
-              <TableCell>Loại đơn</TableCell>
-              <TableCell>Khách hàng</TableCell>
-              <TableCell>Tổng tiền</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Ngày đặt</TableCell>
-              <TableCell>Thao tác</TableCell>
+              <TableCell><strong>Mã đơn</strong></TableCell>
+              <TableCell><strong>Khách hàng</strong></TableCell>
+              <TableCell><strong>Tổng tiền hàng</strong></TableCell>
+              <TableCell><strong>Thực thu</strong></TableCell>
+              <TableCell><strong>Trạng thái</strong></TableCell>
+              <TableCell><strong>Ngày tạo</strong></TableCell>
+              <TableCell align="center"><strong>Thao tác</strong></TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {orders.length === 0 ? (
-              <TableRow><TableCell colSpan={7} align="center">Không có đơn hàng</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={7} align="center">Không có dữ liệu</TableCell>
+              </TableRow>
             ) : (
-              orders.map(order => (
-                <TableRow key={order.orderId}>
-                  <TableCell>{order.orderId}</TableCell>
-                  <TableCell>{order.admin ? "Offline" : "Online"}</TableCell>
-                  <TableCell>{order.fullName}</TableCell>
-                  <TableCell>{order.totalAmount.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</TableCell>
-                  <TableCell>{order.orderStatus}</TableCell>
-                  <TableCell>{new Date(order.createdAt).toLocaleDateString("vi-VN")}</TableCell>
-                  <TableCell>
-                    <Button size="small" onClick={() => showDetails(order)}>Chi tiết</Button>
-                    {order.orderStatus === "PENDING" && (
-                      <Button size="small" color="primary" onClick={() => handleApprove(order.orderId)}>Duyệt</Button>
-                    )}
-                    {order.orderStatus === "PAID" && (
-                      <Button size="small" color="secondary" onClick={() => handleDelivery(order.orderId)}>Chuyển vận chuyển</Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
+              orders.map(order => {
+                const final = order.finalAmount ?? order.totalAmount;
+
+                return (
+                  <TableRow key={order.orderId} hover>
+                    <TableCell>#{order.orderId}</TableCell>
+
+                    <TableCell>
+                      <div>{order.fullName}</div>
+                      <div style={{ fontSize: "0.8em", color: "#666" }}>{order.phoneNumber}</div>
+                    </TableCell>
+
+                    {/* Total */}
+                    <TableCell
+                      style={{
+                        textDecoration: final < order.totalAmount ? "line-through" : "none",
+                        color: "#777"
+                      }}
+                    >
+                      {order.totalAmount.toLocaleString("vi-VN")} đ
+                    </TableCell>
+
+                    {/* Final */}
+                    <TableCell style={{ fontWeight: "bold", color: "#d32f2f" }}>
+                      {final.toLocaleString("vi-VN")} đ
+                    </TableCell>
+
+                    <TableCell>
+                      <span style={{
+                        padding: '4px 8px',
+                        borderRadius: 4,
+                        background:
+                          order.orderStatus === "PENDING" ? "#fff3e0" :
+                          order.orderStatus === "DELIVERED" ? "#e8f5e9" : "#e3f2fd",
+                        color:
+                          order.orderStatus === "PENDING" ? "#ef6c00" :
+                          order.orderStatus === "DELIVERED" ? "#2e7d32" : "#1565c0",
+                        fontWeight: 500
+                      }}>
+                        {order.orderStatus}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>
+                      {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                        <Button variant="outlined" size="small" onClick={() => showDetails(order)}>
+                          Chi tiết
+                        </Button>
+
+                        {order.orderStatus === "PENDING" && (
+                          <Button variant="contained" size="small" onClick={() => handleApprove(order.orderId)}>
+                            Duyệt
+                          </Button>
+                        )}
+
+                        {order.orderStatus === "PAID" && (
+                          <Button variant="contained" color="secondary" size="small" onClick={() => handleDelivery(order.orderId)}>
+                            Giao hàng
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
+
         </Table>
       </TableContainer>
     </div>

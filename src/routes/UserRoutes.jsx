@@ -29,6 +29,7 @@ import C2CProduct from "../pages/productC2C/C2CProductPage";
 import C2CProductDetailPage from "../pages/productC2C/C2CProductDetailPage";
 // import Chatbot from "../components/chat/Chatbot";
 import PrimeShopChat from "../components/chat/ChatC2C";
+import ContactWidget from "../components/contact-widget/ContactWidget";
 
 const UserRoutes = () => {
   return (
@@ -61,7 +62,10 @@ const UserRoutes = () => {
       </Routes>
       <Footer />
       {/* <Chatbot /> */}
-      <PrimeShopChat />
+      <ContactWidget 
+        onOpenChatC2C={() => console.log("Mở Chat C2C")} 
+        onOpenChatBot={() => console.log("Mở Chat AI")} 
+      />
     </div>
   );
 };

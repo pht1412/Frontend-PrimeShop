@@ -1,20 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { FaPhone, FaStore, FaBriefcase, FaShoppingCart, FaHeart, FaUser, FaBars, FaSearch, FaSignOutAlt, FaChevronDown } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Gom import lại
+import { 
+  FaPhone, FaStore, FaBriefcase, FaShoppingCart, 
+  FaUser, FaBars, FaSearch, FaSignOutAlt, FaChevronDown 
+} from "react-icons/fa";
 import "../assets/css/header.css";
 import logo from "../assets/images/P.png";
-import { User } from "../types/user";
 import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
-import { CartContext } from "../context/CartContext";
+// import { useCart } from "../context/CartContext"; // Uncomment nếu đã cấu hình xong CartContext
 import Swal from "sweetalert2";
-import { ChatWidget, FloatingChatWidget } from "./chat/ChatWidget";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
+  
+  // Auth Context
   const { user, logout } = useAuth();
-  const [cartItemCount, setCartItemCount] = useState(0);
+  
+  // State UI
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [cartItemCount, setCartItemCount] = useState(0); // Nếu có CartContext, hãy lấy từ đó
+  
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,16 +31,67 @@ const Header = () => {
     setIsStoreDropdownOpen(!isStoreDropdownOpen);
   };
 
-  // Mock data: Danh sách địa chỉ cửa hàng
+  // Logic kiểm tra User & Role (Ưu tiên lấy từ Context, fallback sang LocalStorage nếu cần)
+  // Nếu useAuth đã xử lý việc persist user thì useEffect này có thể không cần thiết
+  // Tuy nhiên, giữ lại để đảm bảo logic cũ của bạn vẫn chạy
+  const [localUser, setLocalUser] = useState<any>(null);
+  
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setLocalUser(JSON.parse(userData));
+    }
+  }, [user]); // Re-run khi user context thay đổi
+
+  // Xác định user hiện tại (ưu tiên Context -> LocalStorage)
+  const currentUser = user || localUser;
+
+  // --- DEBUG ROLE (Có thể xóa sau khi test xong) ---
+  useEffect(() => {
+    if (currentUser) {
+      console.log("=== THÔNG TIN USER HIỆN TẠI ===");
+      console.log("User:", currentUser);
+      console.log("Is Admin Check:", 
+        currentUser.username === 'admin' || 
+        currentUser.role === 'ADMIN'
+      );
+      console.log("===============================");
+    }
+  }, [currentUser]);
+
+  // Kiểm tra quyền Admin
+  // CẬP NHẬT: Thêm check username === 'admin' vì localStorage hiện tại chưa có role
+  const isAdmin = currentUser && (
+    currentUser.role === 'ADMIN' || 
+    currentUser.roles?.includes('ADMIN') || 
+    currentUser.roles?.includes('ROLE_ADMIN') ||
+    currentUser.username === 'admin' // <--- Fallback cho trường hợp của bạn
+  );
+
+  // Mock data locations
   const storeLocations = [
     { name: "PrimeShop Quận 1", address: "123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh" },
     { name: "PrimeShop Quận 7", address: "456 Đường Nguyễn Hữu Thọ, Quận 7, TP. Hồ Chí Minh" },
     { name: "PrimeShop Hà Nội", address: "789 Đường Giải Phóng, Quận Hoàng Mai, Hà Nội" },
   ];
 
+  // --- LOGIC TÌM KIẾM ---
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      setIsMenuOpen(false); // Đóng menu mobile nếu đang mở
+      navigate(`/all-products?search=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <header className="header">
-      {/* Section 1: Title + Hotline & Nút tiện ích */}
+      {/* Section 1: Top Bar */}
       <section className="top-bar">
         <div className="welcome-text">Chào mừng đến với PrimeShop!</div>
         <div className="top-right">
@@ -62,7 +120,7 @@ const Header = () => {
         </div>
       </section>
 
-      {/* Section 2: Logo, Tìm kiếm, Nút chức năng */}
+      {/* Section 2: Main Header */}
       <section className="main-header">
         <div className="logo">
           <Link to="/home" className="logo-link">
@@ -71,15 +129,27 @@ const Header = () => {
           <p>Mua sắm thông minh, tiện lợi!</p>
         </div>
 
+        {/* SEARCH BOX (DESKTOP) */}
         <div className="search-box">
           <div className="search-wrapper">
-            <FaSearch className="search-icon" />
-            <input type="text" placeholder="Tìm kiếm sản phẩm..." />
+            <FaSearch 
+              className="search-icon" 
+              onClick={handleSearch} 
+              style={{ cursor: 'pointer' }} 
+            />
+            <input 
+              type="text" 
+              placeholder="Tìm kiếm sản phẩm..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </div>
         </div>
 
+        {/* USER ACTIONS */}
         <div className="user-actions">
-          {!user ? (
+          {!currentUser ? (
             <>
               <Link to="/login" className="login-btn">
                 <FaUser className="icon" /> Đăng nhập
@@ -91,10 +161,9 @@ const Header = () => {
           ) : (
             <div className="user-actions">
               <Link to="/account" className="login-btn">
-                <FaUser className="icon" /> {user.username}
+                <FaUser className="icon" /> {currentUser.username}
               </Link>
-              <Link
-                to="#"
+              <button
                 onClick={() => {
                   Swal.fire({
                     title: 'Xác nhận đăng xuất?',
@@ -103,7 +172,6 @@ const Header = () => {
                     confirmButtonText: 'Đăng xuất',
                     cancelButtonText: 'Hủy',
                     confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
                     reverseButtons: true,
                   }).then((result) => {
                     if (result.isConfirmed) {
@@ -113,33 +181,28 @@ const Header = () => {
                   });
                 }}
                 className="login-btn"
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 <FaSignOutAlt className="icon" /> Đăng xuất
-              </Link>
+              </button>
             </div>
           )}
-          <Link to={user ? "/cart" : "/login"} className="cart-btn">
+          
+          <Link to={currentUser ? "/cart" : "/login"} className="cart-btn">
             <FaShoppingCart className="icon" /> Giỏ hàng
             {cartItemCount > 0 && (
               <span className="cart-count">{cartItemCount}</span>
             )}
           </Link>
-          {/* {!user ? (
-            <Link to="/login" className="cart-btn">
-              <FaFacebookMessenger className="icon" /> Tin nhắn
-            </Link>
-          ) : (
-            <FloatingChatWidget />
-          )} */}
         </div>
 
-        {/* Menu Hamburger cho mobile */}
+        {/* Hamburger Mobile */}
         <button className="hamburger" onClick={toggleMenu}>
           <FaBars className={`hamburger-icon ${isMenuOpen ? "open" : ""}`} />
         </button>
       </section>
 
-      {/* Thanh menu điều hướng */}
+      {/* Section 3: Navigation Bar (Desktop) */}
       <nav className="navigation-container">
         <div className="nav-box">
           <Link to="/home" className="nav-item">Trang Chủ</Link>
@@ -147,41 +210,54 @@ const Header = () => {
           <Link to="/all-products" className="nav-item">Sản phẩm</Link>
           <Link to="/news" className="nav-item">Tin Tức</Link>
           <Link to="/faq" className="nav-item">Q&A</Link>
-          {user ? (
-            <Link to="/account" className="nav-item">Tài khoản</Link>
-          ) : (
-            <Link to="/login" className="nav-item">Tài khoản</Link>
-          )}
+          <Link to={currentUser ? "/account" : "/login"} className="nav-item">Tài khoản</Link>
           <Link to="/minigame-list" className="nav-item">Mini Game</Link>
-          <Link to="/delivery-dashboard" className="nav-item">Đơn hàng</Link>
-          <Link to="/c2c" className="nav-item">Gian hàng C2C</Link>
+          
+          {/* PHÂN QUYỀN ADMIN - ĐÃ ĐƯỢC KÍCH HOẠT CHO USERNAME 'admin' */}
+          {isAdmin && (
+               <Link to="/delivery-dashboard" className="nav-item">Đơn hàng</Link>
+          )}
         </div>
       </nav>
 
-      {/* Menu mobile */}
+      {/* Section 4: Mobile Menu */}
       <div className={`mobile-menu ${isMenuOpen ? "open" : ""}`}>
         <div className="mobile-menu-content">
+          
+          {/* SEARCH BOX (MOBILE) - ĐÃ SỬA LỖI */}
           <div className="mobile-search-box">
             <div className="search-wrapper">
-              <FaSearch className="search-icon" />
-              <input type="text" placeholder="Tìm kiếm sản phẩm..." />
+              <FaSearch className="search-icon" onClick={handleSearch} />
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm sản phẩm..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
             </div>
           </div>
-          <Link to="/home" className="mobile-menu-item">Trang Chủ</Link>
-          <Link to="/about" className="mobile-menu-item">Giới thiệu</Link>
-          <Link to="/products" className="mobile-menu-item">Sản phẩm</Link>
-          <Link to="/news" className="mobile-menu-item">Tin Tức</Link>
-          <Link to="/order-tracking" className="mobile-menu-item">Kiểm Tra Đơn Hàng</Link>
-          <Link to="/faq" className="mobile-menu-item">Q&A</Link>
-          <Link to="/account" className="mobile-menu-item">
+
+          <Link to="/home" className="mobile-menu-item" onClick={toggleMenu}>Trang Chủ</Link>
+          <Link to="/about" className="mobile-menu-item" onClick={toggleMenu}>Giới thiệu</Link>
+          {/* Sửa link /products thành /all-products cho đồng bộ */}
+          <Link to="/all-products" className="mobile-menu-item" onClick={toggleMenu}>Sản phẩm</Link>
+          <Link to="/news" className="mobile-menu-item" onClick={toggleMenu}>Tin Tức</Link>
+          
+          {isAdmin && (
+             <Link to="/delivery-dashboard" className="mobile-menu-item" onClick={toggleMenu}>Quản lý Đơn Hàng</Link>
+          )}
+          
+          <Link to="/faq" className="mobile-menu-item" onClick={toggleMenu}>Q&A</Link>
+          <Link to="/account" className="mobile-menu-item" onClick={toggleMenu}>
             <FaUser className="icon" /> Tài khoản
           </Link>
-          <Link to="/wishlist" className="mobile-menu-item">
-            <FaHeart className="icon" /> Yêu thích
-          </Link>
-          <Link to="/cart" className="mobile-menu-item">
+          
+          <Link to="/cart" className="mobile-menu-item" onClick={toggleMenu}>
             <FaShoppingCart className="icon" /> Giỏ hàng {cartItemCount > 0 && `(${cartItemCount})`}
           </Link>
+          
+          {/* Mobile Store Dropdown */}
           <div className="mobile-store-dropdown">
             <button className="mobile-menu-btn" onClick={toggleStoreDropdown}>
               <FaStore className="icon" /> Hệ thống cửa hàng
@@ -198,9 +274,6 @@ const Header = () => {
               </div>
             )}
           </div>
-          <button className="mobile-menu-btn">
-            <FaBriefcase className="icon" /> Tuyển dụng
-          </button>
         </div>
       </div>
     </header>

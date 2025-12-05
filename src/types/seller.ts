@@ -17,6 +17,12 @@ export interface ISellerProfile {
   description: string;
   phone: string;
   status: 'PENDING_REVIEW' | 'VERIFIED_SELLER' | 'BANNED_SELLER';
+  // Bổ sung optional user info
+  user?: {
+      id?: number;
+      username: string;
+      email?: string;
+  };
 }
 
 
@@ -67,7 +73,7 @@ export interface IProductRequest {
   imageUrl: string; 
   stock: number;
   categoryId: number; 
-  specifications: {
+  specs: {
     name: string;
     value: string;
   }[];

@@ -12,6 +12,7 @@ import WalletManager from "../pages/admin/WalletsManager";
 import C2CManagement from "../pages/admin/C2CManagement";
 import RevenueManager from "../pages/admin/RevenueManager";
 import ImportTransactionManager from "../pages/admin/ImportTransactionManager";
+import BusinessManager from "../pages/admin/BusinessManager";
 
 const AdminRoutes = () => {
   return (
@@ -124,6 +125,16 @@ const AdminRoutes = () => {
           <AdminRoute>
             <AdminLayout>
               <ImportTransactionManager />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="business-manager"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <BusinessManager />
             </AdminLayout>
           </AdminRoute>
         }

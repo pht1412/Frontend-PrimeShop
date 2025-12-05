@@ -47,14 +47,75 @@ export const getMyBusinessProfile = () => {
   return api.get<ISellerProfile>('seller/me');
 };
 
-export const getSellerProducts = (page: number = 0, size: number = 10) => {
-  return api.get<IPage<IProductCardResponse>>('/seller/products', {
+// [FIX] Khôi phục lại tham số sellerId
+export const getSellerProducts = (sellerId: number, page: number = 0, size: number = 10) => {
+  return api.get<any>('/seller/products', { // Dùng <any> hoặc <IPage...> để hứng cả List lẫn Page
     params: {
-      // sellerId, (ĐÃ XÓA)
+      sellerId: sellerId, // <-- QUAN TRỌNG: Backend bắt buộc cần cái này!
       page,
       size,
       sort: 'createdAt,desc',
-      // sellerView: true (Backend tự set)
     }
   });
+};
+
+// ==========================================
+// KHU VỰC ADMIN (Mới bổ sung)
+// ==========================================
+
+/**
+ * [ADMIN] Lấy danh sách Seller đang chờ duyệt (Pending)
+ */
+export const adminGetPendingSellers = () => {
+    return api.get<ISellerProfile[]>('/admin/seller/pending-registrations');
+};
+
+/**
+ * [ADMIN] Duyệt đơn đăng ký Seller
+ * @param sellerId 
+ */
+export const adminApproveSeller = (sellerId: number) => {
+    return api.patch(`/admin/seller/approve-registration`, null, {
+        params: { sellerId }
+    });
+};
+
+/**
+ * [ADMIN] Chặn (Ban) Seller
+ * @param sellerId 
+ */
+export const adminBanSeller = (sellerId: number) => {
+    return api.patch(`/admin/seller/ban-seller`, null, {
+        params: { sellerId }
+    });
+};
+
+/**
+ * [ADMIN] Lấy danh sách Sản phẩm đang chờ duyệt (Pending)
+ * Đã xây dựng ở bước trước: /api/admin/seller/pending-products
+ */
+export const adminGetPendingProducts = () => {
+    return api.get<IProductCardResponse[]>('/admin/seller/pending-products');
+};
+
+/**
+ * [ADMIN] Duyệt sản phẩm
+ */
+export const adminApproveProduct = (sellerId: number, productId: number) => {
+    return api.patch(`/admin/seller/approve-products`, null, {
+        params: { sellerId, productId }
+    });
+};
+
+/**
+ * [ADMIN] Từ chối sản phẩm (Reject)
+ */
+export const adminRejectProduct = (sellerId: number, productId: number) => {
+    return api.patch(`/admin/seller/reject-product`, null, {
+        params: { sellerId, productId }
+    });
+};
+
+export const adminGetAllSellers = () => {
+    return api.get<ISellerProfile[]>('/admin/seller/all');
 };

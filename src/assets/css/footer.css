@@ -174,3 +174,42 @@
     height: 24px;
   }
 }
+/* ... Giữ nguyên các phần trên ... */
+
+/* Payment Icons - CẬP NHẬT MỚI */
+.payment-icons {
+  display: flex;
+  gap: 1rem; /* Tăng khoảng cách để thoáng hơn */
+  justify-content: flex-start;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  flex-wrap: wrap; /* Xuống dòng nếu màn hình quá nhỏ */
+}
+
+/* Style cho thẻ a bao quanh ảnh */
+.payment-icons a {
+  display: inline-flex; /* Để căn chỉnh tốt hơn */
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background-color: #ffffff; /* Nền trắng làm nổi bật logo thanh toán */
+  border-radius: 6px; /* Bo góc nhẹ */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Đổ bóng nhẹ tạo độ nổi */
+  transition: all 0.3s ease;
+  border: 1px solid transparent; /* Chuẩn bị cho hover */
+}
+
+.payment-icons a:hover {
+  transform: translateY(-3px); /* Nhấc nhẹ lên khi hover */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  border-color: #2563EB; /* Viền xanh khi hover để user biết đang chọn */
+}
+
+.payment-icons img {
+  width: 42px; /* Kích thước chuẩn icon thanh toán */
+  height: auto; /* Tự động theo tỉ lệ */
+  max-height: 28px; /* Giới hạn chiều cao để đồng đều */
+  object-fit: contain;
+  filter: grayscale(0%); /* Giữ màu gốc */
+}
+
+/* ... Giữ nguyên phần Responsive ... */
