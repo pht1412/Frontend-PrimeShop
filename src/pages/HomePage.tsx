@@ -95,12 +95,12 @@ const HomePage: React.FC = () => {
   return (<>
     {/* Banner trái/phải cố định */}
   <img
-    src="/public/banners/Banner_vertical.png"
+    src="/public/Banner_vertical.png"
     alt="Banner trái"
     className="floating-banner left-fixed"
   />
   <img
-    src="/public/banners/banner-right.png"
+    src="/public/banner-right.png"
     alt="Banner phải"
     className="floating-banner right-fixed"
   />
@@ -109,7 +109,7 @@ const HomePage: React.FC = () => {
       <section className="product-category">
         <div className="category-header">
           <img
-            src="/public/banners/banner1_afterHeader.png"
+            src="/public/banner1_afterHeader.png"
             alt="Khuyến mãi online"
             className="banner-image"
           />
