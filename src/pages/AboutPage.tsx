@@ -1,73 +1,192 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../assets/css/about.css";
 import { Link } from "react-router-dom";
+import { FaRocket, FaHandshake, FaLightbulb, FaUserTie } from "react-icons/fa";
 
 const PageAbout: React.FC = () => {
+  
+  // Logic Scroll Reveal
+  useEffect(() => {
+    const reveal = () => {
+      const reveals = document.querySelectorAll(".about-reveal");
+      for (let i = 0; i < reveals.length; i++) {
+        const windowHeight = window.innerHeight;
+        const elementTop = reveals[i].getBoundingClientRect().top;
+        const elementVisible = 100;
+        if (elementTop < windowHeight - elementVisible) {
+          reveals[i].classList.add("active");
+        }
+      }
+    };
+    window.addEventListener("scroll", reveal);
+    reveal(); 
+    return () => window.removeEventListener("scroll", reveal);
+  }, []);
+
   return (
-    <div className="about-container">
-      {/* Section 1: Tiêu đề */}
-      <section className="about-header">
-        <h1>Giới Thiệu Về PrimeShop</h1>
-        <p className="subtitle">Khám phá câu chuyện và giá trị của chúng tôi</p>
-      </section>
-
-      {/* Section 2: Giới thiệu chung */}
-      <section className="about-intro">
-        <h2>Về Chúng Tôi</h2>
-        <div className="intro-content">
+    <div className="about-body">
+      
+      {/* 1. HERO BANNER */}
+      <section className="about-hero">
+        <div className="about-hero-content">
+          <h1>Hành Trình Kiến Tạo Công Nghệ</h1>
           <p>
-            Chào mừng bạn đến với PrimeShop! Chúng tôi là một trong những hệ thống bán lẻ công nghệ hàng đầu tại Việt Nam, chuyên cung cấp các sản phẩm công nghệ chính hãng từ những thương hiệu nổi tiếng như Apple, Samsung, Xiaomi, và nhiều hơn nữa. Với sứ mệnh mang đến trải nghiệm mua sắm tiện lợi và đáng tin cậy, PrimeShop cam kết mang đến cho khách hàng những sản phẩm chất lượng cao với giá cả cạnh tranh.
+            Từ một cửa hàng nhỏ năm 2015, PrimeShop đã vươn mình trở thành 
+            biểu tượng uy tín hàng đầu trong lĩnh vực bán lẻ thiết bị công nghệ tại Việt Nam.
           </p>
-          <p>
-            Thành lập vào năm 2015, PrimeShop đã không ngừng phát triển với hơn 50 cửa hàng trên toàn quốc và đội ngũ nhân viên tận tâm. Chúng tôi tự hào là người bạn đồng hành của hàng triệu khách hàng trong hành trình khám phá công nghệ hiện đại.
-          </p>
-          <img
-            src="/images/about/store-image.jpg"
-            alt="PrimeShop Store"
-            className="intro-image"
-          />
         </div>
       </section>
 
-      {/* Section 3: Sứ mệnh */}
-      <section className="about-mission">
-        <h2>Sứ Mệnh</h2>
-        <div className="mission-content">
-          <p>
-            Sứ mệnh của PrimeShop là mang công nghệ tiên tiến đến gần hơn với mọi người, giúp khách hàng nâng cao chất lượng cuộc sống thông qua các sản phẩm và dịch vụ chất lượng. Chúng tôi cam kết:
-          </p>
-          <ul>
-            <li>Cung cấp sản phẩm chính hãng với giá cả hợp lý.</li>
-            <li>Tư vấn tận tâm và dịch vụ hậu mãi chu đáo.</li>
-            <li>Đóng góp vào sự phát triển bền vững của cộng đồng.</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Section 4: Giá trị cốt lõi */}
-      <section className="about-values">
-        <h2>Giá Trị Cốt Lõi</h2>
-        <div className="values-grid">
-          <div className="value-card">
-            <div className="value-icon">🎯</div>
-            <h3>Chất Lượng</h3>
-            <p>Cam kết chỉ cung cấp sản phẩm đạt tiêu chuẩn cao nhất.</p>
+      {/* 2. STATS SECTION */}
+      <section className="about-stats-section">
+        <div className="stats-grid">
+          <div className="stat-item">
+            <h3>10+</h3>
+            <p>Năm Kinh Nghiệm</p>
           </div>
-          <div className="value-card">
+          <div className="stat-item">
+            <h3>50+</h3>
+            <p>Cửa Hàng Toàn Quốc</p>
+          </div>
+          <div className="stat-item">
+            <h3>1M+</h3>
+            <p>Khách Hàng Tin Dùng</p>
+          </div>
+          <div className="stat-item">
+            <h3>100%</h3>
+            <p>Sản Phẩm Chính Hãng</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. STORY SECTION */}
+      <section className="about-story-section">
+        <div className="about-story-container about-reveal">
+          <div className="about-story-text">
+            <h2>Khởi Nguồn Đam Mê</h2>
+            <p>
+              Thành lập vào năm 2015, PrimeShop bắt đầu với một niềm tin đơn giản: 
+              "Công nghệ phải dành cho mọi người". Chúng tôi nhận thấy thị trường lúc bấy giờ 
+              đầy rẫy hàng giả và giá cả không minh bạch.
+            </p>
+            <p>
+              Đội ngũ sáng lập đã quyết tâm xây dựng một điểm đến nơi mà <strong>Uy Tín</strong> 
+              được đặt lên hàng đầu.
+            </p>
+          </div>
+          <div className="about-story-image">
+            <img 
+              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800" 
+              alt="PrimeShop Founder" 
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 🆕 TIMELINE SECTION (HORIZONTAL ZIG-ZAG) */}
+      <section className="timeline-section about-reveal">
+        <h2 className="timeline-title">Lộ Trình Phát Triển</h2>
+        <div className="timeline">
+          
+          {/* Item 1 */}
+          <div className="timeline-item">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <span className="timeline-year">2015</span>
+              <h3>Khởi Đầu</h3>
+              <p>Thành lập cửa hàng đầu tiên tại Quận 10, TP.HCM với 5 thành viên.</p>
+            </div>
+          </div>
+
+          {/* Item 2 */}
+          <div className="timeline-item">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <span className="timeline-year">2018</span>
+              <h3>Mở Rộng</h3>
+              <p>Phát triển mạng lưới lên 10 chi nhánh tại TP.HCM và Hà Nội.</p>
+            </div>
+          </div>
+
+          {/* Item 3 */}
+          <div className="timeline-item">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <span className="timeline-year">2021</span>
+              <h3>Chuyển Đổi Số</h3>
+              <p>Ra mắt Website TMĐT, phục vụ khách hàng online toàn quốc.</p>
+            </div>
+          </div>
+
+          {/* Item 4 */}
+          <div className="timeline-item">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <span className="timeline-year">2024</span>
+              <h3>Vươn Tầm</h3>
+              <p>Đạt mốc 50 cửa hàng, Top 10 nhà bán lẻ xuất sắc nhất Việt Nam.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4. VALUES SECTION */}
+      <section className="about-values-section about-reveal">
+        <h2 className="values-title">Giá Trị Cốt Lõi</h2>
+        <div className="values-grid">
+          <div className="about-value-card">
+            <div className="value-icon">💎</div>
+            <h3>Chất Lượng</h3>
+            <p>Chỉ phân phối sản phẩm chính hãng, nguồn gốc rõ ràng. Nói không với hàng kém chất lượng.</p>
+          </div>
+          <div className="about-value-card">
             <div className="value-icon">❤️</div>
             <h3>Tận Tâm</h3>
-            <p>Đặt khách hàng làm trung tâm trong mọi hoạt động.</p>
+            <p>Khách hàng là trung tâm. Dịch vụ hậu mãi và tư vấn luôn được ưu tiên hàng đầu.</p>
           </div>
-          <div className="value-card">
-            <div className="value-icon">💡</div>
-            <h3>Đổi Mới</h3>
-            <p>Luôn tiên phong ứng dụng công nghệ mới nhất.</p>
+          <div className="about-value-card">
+            <div className="value-icon">🚀</div>
+            <h3>Tốc Độ</h3>
+            <p>Giao hàng thần tốc, quy trình bảo hành nhanh gọn, tiết kiệm thời gian cho khách hàng.</p>
           </div>
         </div>
-        <Link to="/contact" className="contact-link">
-          Liên hệ với chúng tôi
-        </Link>
       </section>
+
+      {/* 5. TEAM SECTION */}
+      <section className="about-team-section about-reveal">
+        <h2 className="team-title">Gặp gỡ đội ngũ phát triển PrimeShop</h2>
+        <div className="team-grid">
+          <div className="about-team-member">
+            <div className="member-avatar">
+              <img src="/public/images/pht.jpg" alt="CEO" />
+            </div>
+            <h4>Lê Hồng Phát</h4>
+            <span>Leader + Fullstack developer</span>
+          </div>
+          <div className="about-team-member">
+            <div className="member-avatar">
+              <img src="/public/images/tphat.jpg" alt="CTO" />
+            </div>
+            <h4>Võ Tấn Phát</h4>
+            <span>FullStack developer</span>
+          </div>
+          <div className="about-team-member">
+            <div className="member-avatar">
+              <img src="/public/images/thoai.jpg" alt="CFO" />
+            </div>
+            <h4>Trần Thanh Hoài</h4>
+            <span>Fullstack developer</span>
+          </div>
+        </div>
+        
+        <div style={{marginTop: '3rem'}}>
+           <Link to="/contact" className="about-cta-btn">
+             Liên hệ hợp tác ngay
+           </Link>
+        </div>
+      </section>
+
     </div>
   );
 };

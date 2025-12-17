@@ -4,119 +4,170 @@ import DOMPurify from "dompurify";
 import "../../pages/news/newsDetail.css";
 import { News } from "../../types/news";
 import api from "../../api/api";
+import { FaCalendarAlt, FaUser } from "react-icons/fa";
 
 const NewsDetail2: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [news, setNews] = useState<News | null>(null);
+  const [relatedNews, setRelatedNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [toc, setToc] = useState<string[]>([]); // Table of Contents
 
+  // 1. Fetch News Detail & Related News
   useEffect(() => {
     let isMounted = true;
-
-    const fetchNewsDetail = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const newsId = Number(id);
-        if (isNaN(newsId)) {
-          throw new Error("ID không hợp lệ.");
+        // Fetch Current News
+        const newsRes = await api.get(`/news/${id}`);
+        if (isMounted) {
+          setNews(newsRes.data);
+          
+          // Fetch Content HTML from textUrl
+          if (newsRes.data.textUrl) {
+            try {
+              const htmlRes = await fetch(newsRes.data.textUrl);
+              if (htmlRes.ok) {
+                const rawHtml = await htmlRes.text();
+                // Sanitize
+                const cleanHtml = DOMPurify.sanitize(rawHtml, {
+                  USE_PROFILES: { html: true },
+                  FORBID_TAGS: ['script', 'iframe']
+                });
+                setHtmlContent(cleanHtml);
+                
+                // Extract H2 headers for TOC (Simple Regex)
+                const headers = cleanHtml.match(/<h2.*?>(.*?)<\/h2>/g);
+                if (headers) {
+                  const titles = headers.map(h => h.replace(/<[^>]+>/g, ''));
+                  setToc(titles);
+                }
+              }
+            } catch (e) { console.error("Error loading HTML content"); }
+          }
         }
 
-        const data = await api.get(`/news/${id}`);
-        console.log("Response:", data.data);
+        // Fetch Related News (Latest 3 excluding current)
+        const relatedRes = await api.get('/news', { params: { size: 4, sort: "publishedAt,desc" } });
         if (isMounted) {
-          setNews(data.data);
-          if (data.data.textUrl) {
-            const response = await fetch(data.data.textUrl);
-            console.log("Response:", response);
-            if (!response.ok) throw new Error("Không thể tải nội dung từ textUrl.");
-            const html = await response.text();
-            const sanitizedHtml = DOMPurify.sanitize(html, {
-              USE_PROFILES: { html: true },
-              FORBID_TAGS: ['script', 'iframe'],
-            });
-            setHtmlContent(sanitizedHtml);
-          }
-          setLoading(false);
+          // Filter out current news ID
+          const filtered = relatedRes.data.content.filter((n: News) => String(n.id) !== id).slice(0, 3);
+          setRelatedNews(filtered);
         }
-      } catch (err: any) {
-        if (isMounted) {
-          const errorMessage = err.response?.data?.message || err.message || "Không thể tải chi tiết tin tức.";
-          setError(errorMessage);
-          setLoading(false);
-        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
       }
     };
 
-    fetchNewsDetail();
-
-    return () => {
-      isMounted = false;
-    };
+    fetchData();
+    window.scrollTo(0, 0); // Scroll to top on change
+    return () => { isMounted = false; };
   }, [id]);
 
-  if (loading) {
-    return <div className="news-detail-container">Đang tải...</div>;
-  }
+  // 2. Scroll Progress Logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(progress);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  if (error) {
-    return (
-      <div className="news-detail-container">
-        <p className="error-message">{error}</p>
-        <Link to="/news" className="back-button">
-          Quay lại
-        </Link>
-      </div>
-    );
-  }
-
-  if (!news) {
-    return (
-      <div className="news-detail-container">
-        <p className="not-found-message">Không tìm thấy tin tức</p>
-        <Link to="/news" className="back-button">
-          Quay lại
-        </Link>
-      </div>
-    );
-  }
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = "https://via.placeholder.com/600x400?text=Image+Not+Found";
-  };
+  if (loading) return <div style={{padding:'100px', textAlign:'center'}}>Đang tải bài viết...</div>;
+  if (!news) return <div style={{padding:'100px', textAlign:'center'}}>Không tìm thấy bài viết</div>;
 
   return (
-    <div className="news-detail-container">
-      <h1 className="news-detail-title">{news.title}</h1>
-      <div className="news-detail-image-wrapper">
-        <img
-          src={news.imageUrl || "https://via.placeholder.com/600x400?text=Image+Not+Found"}
-          alt={news.title}
-          className="news-detail-image"
-          onError={handleImageError}
-        />
+    <div className="news-detail-wrapper">
+      {/* 🟢 Reading Progress Bar */}
+      <div className="reading-progress-container">
+        <div className="reading-progress-bar" style={{ width: `${scrollProgress}%` }}></div>
       </div>
-      <div className="news-detail-content-wrapper">
-        <p className="news-detail-excerpt">{news.excerpt}</p>
-        <div className="news-detail-content">
-          {htmlContent ? (
-            <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          ) : (
-            <p>Không có nội dung chi tiết để hiển thị.</p>
-          )}
+
+      {/* 🔵 Hero Header */}
+      <header className="news-detail-header">
+        <span className="news-detail-category">Tin Công Nghệ</span>
+        <h1 className="news-detail-title">{news.title}</h1>
+        <div className="news-detail-meta">
+          <span><FaCalendarAlt style={{marginRight:5}}/> {new Date(news.publishedAt).toLocaleDateString("vi-VN")}</span>
+          <span><FaUser style={{marginRight:5}}/> Admin PrimeShop</span>
         </div>
+      </header>
+
+      <div className="news-content-container">
+        {/* 🟠 Main Content Column */}
+        <div className="news-main-col">
+          <img 
+            src={news.imageUrl || "https://via.placeholder.com/800x400"} 
+            alt={news.title} 
+            className="news-featured-image"
+            onError={(e) => e.currentTarget.src = "https://via.placeholder.com/800x400"}
+          />
+          
+          <div className="news-body-content">
+            <p className="news-excerpt" style={{fontWeight: 'bold', fontSize: '1.2rem'}}>
+              {news.excerpt}
+            </p>
+            {htmlContent ? (
+              <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+            ) : (
+              <p>Nội dung chi tiết đang được cập nhật...</p>
+            )}
+          </div>
+        </div>
+
+        {/* 🟣 Sidebar Column (Sticky) */}
+        <aside className="news-sidebar-col">
+          <div className="sticky-sidebar">
+            {/* Table of Contents */}
+            {toc.length > 0 && (
+              <div className="toc-box">
+                <div className="toc-title">Mục lục bài viết</div>
+                <ul className="toc-list">
+                  {toc.map((header, index) => (
+                    <li key={index} onClick={() => alert("Tính năng cuộn đang phát triển!")}>
+                      {index + 1}. {header}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {/* Mini Promo Banner (Mockup) */}
+            <div style={{background: '#EFF6FF', padding: '20px', borderRadius: '12px', textAlign: 'center'}}>
+              <h4 style={{color:'#1E3A8A', marginBottom:'10px'}}>PrimeShop Sale</h4>
+              <p style={{fontSize:'0.9rem', marginBottom:'15px'}}>Săn deal công nghệ giá sốc ngay hôm nay!</p>
+              <Link to="/all-products" style={{display:'inline-block', background:'#2563EB', color:'white', padding:'8px 16px', borderRadius:'6px', textDecoration:'none', fontSize:'0.9rem'}}>Mua Ngay</Link>
+            </div>
+          </div>
+        </aside>
       </div>
-      <p className="news-detail-date">
-        🗓{" "}
-        {new Date(news.publishedAt || "").toLocaleDateString("vi-VN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })}
-      </p>
-      <Link to="/news" className="back-button">
-        Quay lại
-      </Link>
+
+      {/* 🟡 Related Posts Section */}
+      <section className="related-posts-section">
+        <h2 className="related-title">Bài Viết Liên Quan</h2>
+        <div className="related-grid">
+          {relatedNews.map((item) => (
+            <Link key={item.id} to={`/news/${item.id}`} className="related-card">
+              <img src={item.imageUrl || "https://via.placeholder.com/300x200"} alt={item.title} />
+              <div className="related-card-body">
+                <h4 className="related-card-title">{item.title}</h4>
+                <span className="related-card-date">{new Date(item.publishedAt).toLocaleDateString("vi-VN")}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+        <div style={{textAlign:'center', marginTop:'3rem'}}>
+           <Link to="/news" className="back-button">Xem tất cả tin tức</Link>
+        </div>
+      </section>
     </div>
   );
 };

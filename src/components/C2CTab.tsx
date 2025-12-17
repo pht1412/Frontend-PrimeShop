@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@mui/material';
-import { FaPlus, FaEdit, FaEyeSlash, FaTrash, FaClock, FaBan } from 'react-icons/fa';
+import { FaPlus, FaEdit } from 'react-icons/fa';
 import '../assets/css/c2c-tab.css';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import C2CProductFormModal from './C2CProductFormModal';
+import SellerApplyModal from './SellerApplyModal'; // ✅ NEW
 import { User } from '../types/user';
 import * as sellerApi from '../api/seller.api';
-import { ISellerProfile, IProductCardResponse, IProductRequest, ProductStatus } from '../types/seller';
+import { ISellerProfile, IProductCardResponse, IProductRequest, ProductStatus, ISellerRequest } from '../types/seller';
 
 interface C2CTabProps {
   user: User | null;
@@ -72,6 +73,7 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
   const [products, setProducts] = useState<IProductCardResponse[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false); // ✅ NEW
 
   const fetchSellerStatus = useCallback(async () => {
     if (!user) {
@@ -85,7 +87,11 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
       setSellerProfile(response.data);
     } catch (error: any) {
       if (error.response?.status === 404) setSellerProfile(null);
-      else toast.error('Lỗi tải Business Profile.');
+      else {
+        // Log chi tiết để dễ debug và hiển thị message cụ thể nếu có
+        console.error('Lỗi tải Business Profile:', error);
+        toast.error(error.response?.data?.message || error.message || 'Lỗi tải Business Profile.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +127,44 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
     }
   }, [sellerProfile, fetchSellerStatus]);
 
-  const handleApply = async () => { /* ... Giữ nguyên logic Apply ... */ };
+  // === [FIXED] HÀM ĐĂNG KÝ SELLER (cập nhật để dùng SellerApplyModal) ===
+  const handleApply = () => {
+    if (!user) {
+      toast.error('Vui lòng đăng nhập trước.');
+      return;
+    }
+    setIsApplyModalOpen(true);
+  };
+
+  const handleApplySubmit = async (formData: {
+    shopName: string;
+    phone: string;
+    identityCard: string;
+    description: string;
+    address: string;
+  }) => {
+    setIsSubmitting(true);
+    try {
+      const applyRequest: ISellerRequest = {
+        shopName: formData.shopName,
+        phone: formData.phone,
+        identityCard: formData.identityCard,
+        description: formData.description,
+        address: formData.address,
+      };
+
+      await sellerApi.applyForSeller(applyRequest);
+
+      toast.success('Đơn đăng ký của bạn đã được gửi. Vui lòng chờ admin duyệt.');
+      await fetchSellerStatus();
+    } catch (err: any) {
+      console.error('Lỗi gửi đơn:', err);
+      toast.error(err.response?.data?.message || 'Lỗi gửi đơn đăng ký.');
+      throw err; // re-throw để component biết xử lý error
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // === [FIXED] HÀM XỬ LÝ LƯU (CREATE/UPDATE) ===
   const handleModalSave = async (formData: any) => {
@@ -193,62 +236,125 @@ const C2CTab: React.FC<C2CTabProps> = ({ user }) => {
   const handleDelete = () => Swal.fire('Thông báo', 'Tính năng đang phát triển', 'info');
 
   if (isLoading) return <div className="wallet-loading">Đang tải dữ liệu...</div>;
-  if (!sellerProfile) return ( /* ... Giữ nguyên ... */ <div className="activate-wallet-container"><Button onClick={handleApply}>Đăng ký Business</Button></div> );
 
-  // ... (Các đoạn check status PENDING/BANNED giữ nguyên) ...
+  // ===== CASE 1: Chưa là Seller =====
+  if (!sellerProfile) {
+    return (
+      <>
+        <div className="activate-wallet-container">
+          <h3>Bạn chưa là Seller</h3>
+          <p>Đăng ký để bán hàng trên nền tảng</p>
+          <button 
+            onClick={handleApply}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            📝 Đăng ký Business
+          </button>
+        </div>
 
-  return (
-    <div className="c2c-tab-container">
-      <div className="c2c-header">
-        <h3 className="mb-3">Gian hàng: {sellerProfile.shopName}</h3>
-        <Button variant="contained" color="primary" startIcon={<FaPlus />} onClick={handlePostNew}>
-          Đăng tin mới
-        </Button>
+        {/* Modal form */}
+        <SellerApplyModal
+          open={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          onSubmit={handleApplySubmit}
+          isSubmitting={isSubmitting}
+        />
+      </>
+    );
+  }
+
+  // ===== CASE 2: Đang chờ duyệt =====
+  if (sellerProfile.status === 'PENDING_REVIEW') {
+    return (
+      <div className="activate-wallet-container">
+        <h3>⏳ Đơn của bạn đang chờ duyệt</h3>
+        <p>Admin sẽ kiểm tra và phê duyệt trong vòng 24-48 giờ</p>
+        <p style={{ fontSize: '12px', color: '#999' }}>Shop: {sellerProfile.shopName}</p>
       </div>
+    );
+  }
 
-      <div className="c2c-product-list">
-        {products.length === 0 ? (
-          <div className="c2c-empty-state"><p>Chưa có tin đăng nào</p></div>
-        ) : (
-          products.map(product => {
-            const statusInfo = renderProductStatus(product.status);
-            
-            // [FIXED] Dùng hàm helper để lấy condition thực tế hiển thị ra UI
-            const displayCondition = getSpecValue(product, 'condition');
+  // ===== CASE 3: Bị từ chối =====
+  if (sellerProfile.status === 'REJECTED') {
+    return (
+      <>
+        <div className="activate-wallet-container">
+          <h3>❌ Đơn của bạn bị từ chối</h3>
+          <p>Lý do: {sellerProfile.description || 'Không rõ'}</p>
+          <button 
+            onClick={handleApply}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Gửi lại đơn
+          </button>
+        </div>
 
-            return (
-              <div key={product.id} className="c2c-product-item shadow-sm">
-                <img src={product.imageUrl || 'https://via.placeholder.com/150'} alt={product.name} className="c2c-product-image" />
-                <div className="c2c-product-info">
-                  <h5 className="product-name">{product.name}</h5>
-                  <p className="product-price">{formatCurrency(product.price)}</p>
-                  
-                  {/* [FIXED] Hiển thị đúng tình trạng lấy từ specs */}
-                  <p className="product-meta">
-                    <span>{renderCondition(displayCondition)}</span> | <span>{product.category}</span>
-                  </p>
-                  
-                  <span className={`product-status-badge ${statusInfo.className}`}>{statusInfo.text}</span>
+        <SellerApplyModal
+          open={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          onSubmit={handleApplySubmit}
+          isSubmitting={isSubmitting}
+        />
+      </>
+    );
+  }
+
+  // ===== CASE 4: Đã duyệt - Hiển thị gian hàng =====
+  if (sellerProfile.status === 'VERIFIED_SELLER') {
+    return (
+      <div className="c2c-tab-container">
+        <div className="c2c-header">
+          <h3 className="mb-3">Gian hàng: {sellerProfile.shopName}</h3>
+          <button 
+            onClick={handlePostNew}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+          >
+            <FaPlus /> Đăng tin mới
+          </button>
+        </div>
+
+        <div className="c2c-product-list">
+          {products.length === 0 ? (
+            <div className="c2c-empty-state"><p>Chưa có tin đăng nào</p></div>
+          ) : (
+            products.map(product => {
+              const statusInfo = renderProductStatus(product.status);
+              const displayCondition = getSpecValue(product, 'condition');
+
+              return (
+                <div key={product.id} className="c2c-product-item shadow-sm">
+                  <img src={product.imageUrl || 'https://via.placeholder.com/150'} alt={product.name} className="c2c-product-image" />
+                  <div className="c2c-product-info">
+                    <h5 className="product-name">{product.name}</h5>
+                    <p className="product-price">{formatCurrency(product.price)}</p>
+                    <p className="product-meta">
+                      <span>{renderCondition(displayCondition)}</span> | <span>{product.category}</span>
+                    </p>
+                    <span className={`product-status-badge ${statusInfo.className}`}>{statusInfo.text}</span>
+                  </div>
+                  <div className="c2c-product-actions">
+                    <button onClick={() => handleEdit(product)} className="btn-outlined">✏️ Sửa</button>
+                    <button onClick={handleToggleHide} className="btn-outlined">👁️ Ẩn</button>
+                    <button onClick={handleDelete} className="btn-danger">🗑️ Xóa</button>
+                  </div>
                 </div>
-                <div className="c2c-product-actions">
-                  <Button variant="outlined" size="small" startIcon={<FaEdit />} onClick={() => handleEdit(product)}>Sửa</Button>
-                  <Button variant="outlined" size="small" color="secondary" onClick={handleToggleHide}>Ẩn</Button>
-                  <Button variant="outlined" size="small" color="error" onClick={handleDelete}>Xóa</Button>
-                </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
+
+        <C2CProductFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          productToEdit={editingProduct}
+          onSave={handleModalSave}
+        />
       </div>
+    );
+  }
 
-      <C2CProductFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        productToEdit={editingProduct}
-        onSave={handleModalSave}
-      />
-    </div>
-  );
+  // Default: status không xác định
+  return <div className="activate-wallet-container">Trạng thái không xác định. Vui lòng liên hệ support.</div>;
 };
 
 export default C2CTab;

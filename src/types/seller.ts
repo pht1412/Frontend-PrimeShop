@@ -3,13 +3,15 @@
 
 export type ProductStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'DISABLED';
 
-// ... (ISellerRequest, ISellerProfile giữ nguyên) ...
+// ... (ISellerProfile giữ nguyên) ...
 export interface ISellerRequest {
   shopName: string;
-  identityCard: string;
+  phone: string;           // ✅ NEW
+  identityCard: string;    // ✅ NEW (CCCD/CMND)
   description: string;
-  phone: string;
+  address?: string;        // optional
 }
+
 export interface ISellerProfile {
   id: number;
   shopName: string;

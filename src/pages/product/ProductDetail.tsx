@@ -10,12 +10,13 @@ import { Review } from "../../types/review";
 import { Button, Card, CardContent, TextField } from "@mui/material";
 import StarRatings from 'react-star-ratings';
 import Swal from "sweetalert2";
-import { FaShoppingCart, FaCreditCard, FaCommentDots, FaStore, FaStar, FaCircle } from "react-icons/fa";
+// Import thêm icon cho Policy Box
+import { FaShoppingCart, FaCreditCard, FaCommentDots, FaStore, FaStar, FaCircle, FaShieldAlt, FaTruck, FaUndo, FaCheckCircle } from "react-icons/fa";
 
-// --- CẬP NHẬT INTERFACE ---
+// --- INTERFACE GIỮ NGUYÊN ---
 interface Seller {
-  id: number;          // Đây là Shop ID (Ví dụ: 302)
-  userId: number;      // <--- THÊM DÒNG NÀY: ID của User chủ shop (Ví dụ: 10016)
+  id: number;
+  userId: number;
   shopName: string;
   avatar?: string;
   identityCard?: string;
@@ -39,7 +40,7 @@ const ProductDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
-  // Fetch Data Logic
+  // --- LOGIC GIỮ NGUYÊN ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,12 +55,9 @@ const ProductDetailPage: React.FC = () => {
         setProductImages(imagesRes.data);
         setReviews(reviewsRes.data);
         
-        // --- LOG KIỂM TRA (DEBUG) ---
-        console.log("🛒 Dữ liệu Seller nhận được:", productRes.data.seller);
         if (!productRes.data.seller.userId) {
-             console.warn("⚠️ CẢNH BÁO: API chưa trả về userId của Seller! Vui lòng kiểm tra Backend Product.");
+             console.warn("⚠️ CẢNH BÁO: API chưa trả về userId của Seller!");
         }
-        // ----------------------------
 
       } catch (err) {
         console.error("Lỗi tải dữ liệu chi tiết:", err);
@@ -71,7 +69,6 @@ const ProductDetailPage: React.FC = () => {
     if (slug) fetchData();
   }, [slug, navigate]);
 
-  // Handlers
   const handleAddToCart = async () => {
     const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
@@ -92,7 +89,6 @@ const ProductDetailPage: React.FC = () => {
     navigate("/cart");
   };
 
-  // --- SỬA LOGIC CHAT TẠI ĐÂY ---
   const handleChatWithShop = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -100,25 +96,18 @@ const ProductDetailPage: React.FC = () => {
         return navigate('/login');
     }
 
-    // Validate dữ liệu quan trọng
     if (!product?.seller.userId) {
-        console.error("❌ Lỗi: Không tìm thấy User ID của chủ shop. Dữ liệu seller:", product?.seller);
         toast.error("Lỗi hệ thống: Không xác định được chủ shop.");
         return;
     }
     
     try {
         toast.info("Đang kết nối...");
-        
-        // SỬA: Gửi userId (10016) thay vì id (302)
         const res = await api.post('/chat/create', null, { 
             params: { sellerId: product.seller.userId } 
         });
-
-        // Phát sự kiện Global
         const chatEvent = new CustomEvent('PRIMESHOP_OPEN_CHAT', { detail: res.data });
         window.dispatchEvent(chatEvent);
-
     } catch (error) {
         console.error("Lỗi tạo hội thoại:", error);
         toast.error("Không thể kết nối với Shop lúc này.");
@@ -146,6 +135,13 @@ const ProductDetailPage: React.FC = () => {
     <div className={styles.productPage}>
       <ToastContainer position="top-right" autoClose={2000} />
       
+      {/* 1. BREADCRUMB (Mới) */}
+      <div className={styles.breadcrumb}>
+        <span onClick={() => navigate('/')}>Trang chủ</span> / 
+        <span onClick={() => navigate('/all-products')}> Sản phẩm</span> / 
+        <span className={styles.activeBreadcrumb}> {product.name}</span>
+      </div>
+
       <section className={styles.productOverview}>
         <div className={styles.productImages}>
           <div className={styles.mainImage}>
@@ -221,10 +217,18 @@ const ProductDetailPage: React.FC = () => {
               <FaCreditCard /> Mua ngay
             </button>
           </div>
+
+          {/* 2. POLICY BOX (Mới - Trust Signals) */}
+          <div className={styles.policyBox}>
+              <div className={styles.policyItem}><FaCheckCircle className={styles.policyIcon}/> Hàng chính hãng 100%</div>
+              <div className={styles.policyItem}><FaTruck className={styles.policyIcon}/> Miễn phí vận chuyển</div>
+              <div className={styles.policyItem}><FaShieldAlt className={styles.policyIcon}/> Bảo hành 12 tháng</div>
+              <div className={styles.policyItem}><FaUndo className={styles.policyIcon}/> Đổi trả trong 7 ngày</div>
+          </div>
+
         </div>
       </section>
 
-      {/* CÁC SECTION KHÁC GIỮ NGUYÊN */}
       <section className={styles.contentGrid}>
          <div className={styles.sectionBox}>
             <h2 className={styles.sectionTitle}>Mô tả sản phẩm</h2>
@@ -235,6 +239,7 @@ const ProductDetailPage: React.FC = () => {
 
          <div className={styles.sectionBox}>
             <h2 className={styles.sectionTitle}>Thông số kỹ thuật</h2>
+            {/* 3. Specs List (CSS sẽ xử lý Zebra Striping) */}
             <ul className={styles.specsList}>
                 {product.specs?.length > 0 ? product.specs.map((spec, idx) => (
                     <li key={idx}>
@@ -251,7 +256,7 @@ const ProductDetailPage: React.FC = () => {
       <section className={styles.sectionBox}>
          <h2 className={styles.sectionTitle}>Đánh giá ({reviews.length})</h2>
          
-         <div style={{marginBottom: '2rem', background: '#f9fafb', padding: '1.5rem', borderRadius: 8}}>
+         <div className={styles.reviewFormBox}>
             <h4 style={{marginTop: 0, marginBottom: '1rem'}}>Viết đánh giá của bạn</h4>
             <div style={{marginBottom: '1rem'}}>
                 <StarRatings

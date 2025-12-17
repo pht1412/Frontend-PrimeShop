@@ -1,215 +1,193 @@
-/* Footer */
+/* --- FOOTER MAIN --- */
 .footer {
-  background: linear-gradient(180deg, #F9FAFB 0%, #E5E7EB 100%); /* Gradient nhẹ, đồng bộ với website */
-  padding: 2.5rem 0;
-  border-top: 1px solid #D1D5DB; /* Viền sáng hơn */
-  font-family: Arial, sans-serif;
+  background-color: #0F172A; /* Màu xanh đen (Slate 900) - Rất sang */
+  color: #94A3B8; /* Màu chữ xám xanh nhẹ, dễ đọc trên nền tối */
+  padding: 4rem 0 0;
+  font-family: 'Inter', sans-serif;
+  border-top: 4px solid #1E3A8A; /* Đường viền xanh đậm nối liền cảm xúc */
+  margin-top: auto;
 }
 
-/* Footer Container */
+/* Container giới hạn chiều rộng */
 .footer-container {
-  max-width: 1280px; /* Tăng nhẹ để phù hợp với website lớn */
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 0 1.5rem;
-  gap: 1rem; /* Thêm gap để căn chỉnh tốt hơn */
+  gap: 2.5rem;
 }
 
-/* Footer Column */
+/* Cột Footer */
 .footer-column {
   flex: 1;
-  min-width: 180px; /* Giảm min-width để linh hoạt hơn */
-  margin-bottom: 1.25rem;
+  min-width: 240px; /* Đảm bảo không bị co quá nhỏ */
 }
 
+/* Tiêu đề cột */
 .footer-column h3 {
+  color: #FFFFFF;
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #1E3A8A; /* Màu xanh đậm, đồng bộ với header */
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.2px;
-}
-
-.footer-column p {
-  margin: 0.4rem 0;
-  color: #4B5563; /* Xám đậm hơn để dễ đọc */
-  font-size: 0.85rem;
-}
-
-.footer-column a {
-  text-decoration: none;
-  color: #4B5563;
-  font-size: 0.85rem;
-  transition: color 0.2s ease, transform 0.2s ease;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
   display: inline-block;
+}
+
+/* Gạch chân trang trí dưới tiêu đề */
+.footer-column h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 40px;
+  height: 3px;
+  background: #3B82F6; /* Màu xanh dương thương hiệu */
+  border-radius: 2px;
+}
+
+/* Đoạn văn bản */
+.footer-column p {
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+}
+
+/* Liên kết (Link) */
+.footer-column a {
+  display: block;
+  text-decoration: none;
+  color: #94A3B8;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  width: fit-content;
 }
 
 .footer-column a:hover {
-  color: #2563EB; /* Màu xanh sáng khi hover */
-  transform: translateX(2px); /* Dịch chuyển nhẹ khi hover */
+  color: #3B82F6; /* Đổi màu xanh khi hover */
+  transform: translateX(5px); /* Hiệu ứng đẩy nhẹ sang phải */
 }
 
-.footer-column a:focus {
-  outline: 2px solid #2563EB; /* Hỗ trợ accessibility */
-  outline-offset: 2px;
+/* --- NEWSLETTER (ĐĂNG KÝ NHẬN TIN) --- */
+.newsletter-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Social Icons */
-.social-icons {
+.newsletter-form {
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-top: 10px;
 }
 
-.social-icons a {
-  display: inline-block;
-  transition: transform 0.2s ease;
+.newsletter-form input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 6px 0 0 6px;
+  border: 1px solid #334155;
+  background: #1E293B;
+  color: white;
+  outline: none;
+  font-size: 0.9rem;
 }
 
-.social-icons img {
-  width: 28px;
-  height: 28px;
+.newsletter-form input:focus {
+  border-color: #3B82F6;
+}
+
+.newsletter-form button {
+  padding: 10px 20px;
+  background: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.newsletter-form button:hover {
+  background: #1D4ED8;
+}
+
+/* --- SOCIAL & PAYMENT ICONS --- */
+.social-icons, .payment-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.social-icons a, .payment-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #FFFFFF; /* Nền trắng để logo gốc nổi bật */
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 0; /* Override style của thẻ a ở trên */
+}
+
+
+.social-icons a:hover, .payment-icons a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4); /* Bóng xanh khi hover */
+}
+
+.social-icons img, .payment-icons img {
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.social-icons img:hover {
-  transform: scale(1.15); /* Phóng to nhẹ */
-  filter: brightness(1.1); /* Tăng độ sáng khi hover */
+
+.payment-icons a {
+  width: 50px; /* Icon thanh toán rộng hơn chút */
+  margin-bottom: 10rem;
 }
 
-/* Payment Icons */
-.payment-icons {
-  display: flex;
-  gap: 0.75rem; /* Thêm gap để hỗ trợ nhiều icon */
-  justify-content: flex-start; /* Căn trái để đồng bộ với các cột */
-}
 
 .payment-icons img {
-  width: 48px; /* Kích thước cân đối hơn */
-  height: 32px;
-  object-fit: contain;
-  transition: transform 0.2s ease;
+  width: 32px;
+  margin-top: 0.5rem;
 }
 
-.payment-icons img:hover {
-  transform: scale(1.1); /* Phóng to nhẹ khi hover */
+/* --- COPYRIGHT BAR --- */
+.footer-bottom {
+  background: #020617; /* Màu đen hơn chút để tách biệt */
+  margin-top: 4rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #1E293B;
+  font-size: 0.85rem;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .footer-container {
-    max-width: 960px;
-    padding: 0 1rem;
-  }
-
-  .footer-column {
-    min-width: 160px;
-  }
+.footer-bottom-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .footer-container {
     flex-direction: column;
-    align-items: center;
+    gap: 2rem;
+  }
+  
+  .footer-bottom-content {
+    flex-direction: column;
+    gap: 1rem;
     text-align: center;
-    gap: 1.5rem;
-  }
-
-  .footer-column h3 {
-    font-size: 1rem;
-  }
-
-  .footer-column p,
-  .footer-column a {
-    font-size: 0.8rem;
-  }
-
-  .social-icons {
-    justify-content: center;
-  }
-
-  .social-icons img {
-    width: 24px;
-    height: 24px;
-  }
-
-  .payment-icons {
-    justify-content: center;
-  }
-
-  .payment-icons img {
-    width: 40px;
-    height: 28px;
   }
 }
-
-@media (max-width: 480px) {
-  .footer-container {
-    padding: 0 0.75rem;
-  }
-
-  .footer-column {
-    min-width: 100%;
-  }
-
-  .footer-column h3 {
-    font-size: 0.95rem;
-  }
-
-  .footer-column p,
-  .footer-column a {
-    font-size: 0.75rem;
-  }
-
-  .social-icons img {
-    width: 22px;
-    height: 22px;
-  }
-
-  .payment-icons img {
-    width: 36px;
-    height: 24px;
-  }
-}
-/* ... Giữ nguyên các phần trên ... */
-
-/* Payment Icons - CẬP NHẬT MỚI */
-.payment-icons {
-  display: flex;
-  gap: 1rem; /* Tăng khoảng cách để thoáng hơn */
-  justify-content: flex-start;
-  align-items: center; /* Căn giữa theo chiều dọc */
-  flex-wrap: wrap; /* Xuống dòng nếu màn hình quá nhỏ */
-}
-
-/* Style cho thẻ a bao quanh ảnh */
-.payment-icons a {
-  display: inline-flex; /* Để căn chỉnh tốt hơn */
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  background-color: #ffffff; /* Nền trắng làm nổi bật logo thanh toán */
-  border-radius: 6px; /* Bo góc nhẹ */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Đổ bóng nhẹ tạo độ nổi */
-  transition: all 0.3s ease;
-  border: 1px solid transparent; /* Chuẩn bị cho hover */
-}
-
-.payment-icons a:hover {
-  transform: translateY(-3px); /* Nhấc nhẹ lên khi hover */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-  border-color: #2563EB; /* Viền xanh khi hover để user biết đang chọn */
-}
-
-.payment-icons img {
-  width: 42px; /* Kích thước chuẩn icon thanh toán */
-  height: auto; /* Tự động theo tỉ lệ */
-  max-height: 28px; /* Giới hạn chiều cao để đồng đều */
-  object-fit: contain;
-  filter: grayscale(0%); /* Giữ màu gốc */
-}
-
-/* ... Giữ nguyên phần Responsive ... */

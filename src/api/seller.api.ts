@@ -4,23 +4,18 @@ import { ISellerRequest, ISellerProfile, IProductRequest } from '../types/seller
 import { IPage, IProductCardResponse } from '../types/seller';
 
 /**
- * [LUỒNG 1] "Xin" làm Seller
+ * [LUỒNG 1] "Xin" làm Seller - gửi đơn đăng ký
  */
 export const applyForSeller = (request: ISellerRequest) => {
   return api.post<ISellerProfile>('/seller/apply', request);
 };
 
 /**
- * [LUỒNG 2.1] Lấy hồ sơ Seller của chính mình
+ * [LUỒNG 2.1] Lấy hồ sơ Seller của chính mình (alias)
  */
 export const getMySellerProfile = () => {
-  return api.get<ISellerProfile>('seller/me');
+  return api.get<ISellerProfile>('/seller/me'); // ✅ ensure leading '/'
 };
-
-/**
- * [LUỒNG 2.2] Lấy danh sách sản phẩm theo sellerId
- * Backend yêu cầu: @ModelAttribute ProductFilterRequest + @RequestParam Long sellerId
- */
 
 /**
  * [LUỒNG 2.3] Thêm sản phẩm
@@ -35,23 +30,25 @@ export const addProduct = (request: IProductRequest, sellerId: number) => {
  * [LUỒNG 2.4] Cập nhật sản phẩm
  */
 export const updateProduct = (productId: number, request: IProductRequest) => {
-  return api.patch('seller/update-product', request, {
+  return api.patch('/seller/update-product', request, { // ✅ ensure leading '/'
     params: { id: productId }
   });
 };
 
 /**
- * [LUỒNG 2.5] Hồ sơ Business (alias)
+ * [LUỒNG 2.5] Hồ sơ Business (chính thức, alias của getMySellerProfile)
  */
 export const getMyBusinessProfile = () => {
-  return api.get<ISellerProfile>('seller/me');
+  return api.get<ISellerProfile>('/seller/me'); // ✅ ensure leading '/'
 };
 
-// [FIX] Khôi phục lại tham số sellerId
+/**
+ * [LUỒNG 2.2] Lấy danh sách sản phẩm theo sellerId
+ */
 export const getSellerProducts = (sellerId: number, page: number = 0, size: number = 10) => {
-  return api.get<any>('/seller/products', { // Dùng <any> hoặc <IPage...> để hứng cả List lẫn Page
+  return api.get<any>('/seller/products', {
     params: {
-      sellerId: sellerId, // <-- QUAN TRỌNG: Backend bắt buộc cần cái này!
+      sellerId,
       page,
       size,
       sort: 'createdAt,desc',
