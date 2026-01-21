@@ -1,13 +1,23 @@
-Chức Năng:
-- Đăng nhập/ đăng ký (đã css)
-- Yêu thích (đã css, chưa có logic, lỗi khi reset trang sẽ mất yêu thích, chưa có data)
-- Giỏ hàng (đã css)
-- Trang chủ (đã css)
-- Banner quảng cáo (đã css)
-- Danh mục sản phẩm (đã css)
-- Chi tiết sản phẩm (đã css, dùng thử data mẫu ổn)
-- Menubar sản phẩm (đã css phần Phone,...)
-- Tin tức (đã css)
-- Kiểm tra đơn hàng (đã css, nhưng lỗi không tìm được component OrderTrackingPages)
-- Tài khoản (đã css)
-- Footer dưới (đã css)
+Frontend (React + Vite)
+1. Công nghệ sử dụng
+
+  React
+  
+  Vite
+  
+  Axios
+  
+  React Router
+  
+  JWT (qua API)
+
+2. Yêu cầu môi trường
+
+  Node.js 18+
+  
+  npm (đi kèm Node)
+
+3. Cài đặt và cấu hình
+  npm install
+4. Chạy Frontend
+  npm run dev
