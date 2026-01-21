@@ -1,3 +1,4 @@
+// src/pages/AccountPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/account.css';
@@ -34,7 +35,6 @@ const AccountPage = () => {
   };
 
   // --- HELPER: MAP STATUS TO BADGE ---
-  // Hàm này map đúng Enum của bạn sang Label tiếng Việt và Class màu sắc
   const getStatusInfo = (status: string) => {
     switch(status) {
       // 1. Nhóm Chờ (Màu Cam)
@@ -155,26 +155,72 @@ const AccountPage = () => {
       } catch (error) { toast.error("Lỗi thanh toán MoMo"); } 
   }
 
+  // --- PHƯƠNG THỨC THANH TOÁN (GIAO DIỆN MỚI LUNG LINH) ---
   const showPaymentMethod = (order: any) => {
     const amountToPay = order.finalAmount ?? order.totalAmount;
+    
     Swal.fire({
-      title: 'Chọn phương thức thanh toán',
+      title: '', // Tắt title mặc định
+      width: 500, // Tăng độ rộng modal
       html: `
-        <div style="text-align: center; margin-bottom: 10px;">Số tiền: <strong style="color: #d32f2f; font-size: 1.2em;">${formatCurrency(amountToPay)}</strong></div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <button id="pay-vnpay" class="swal-payment-btn">Thanh toán VNPAY</button>
-          <button id="pay-wallet" class="swal-payment-btn wallet">Ví Prime</button>
-          <button id="pay-momo" class="swal-payment-btn">MoMo</button>
-          <button id="pay-paypal" class="swal-payment-btn">PayPal</button>
+        <div class="payment-modal-container">
+          <div class="payment-header">
+            <p class="payment-label">Tổng thanh toán</p>
+            <h2 class="payment-amount">${formatCurrency(amountToPay)}</h2>
+            <div class="payment-divider"></div>
+            <p class="payment-sub">Vui lòng chọn phương thức bên dưới</p>
+          </div>
+
+          <div class="payment-options">
+            
+            <button id="pay-vnpay" class="payment-btn btn-vnpay">
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 10C2 7.17157 2 5.75736 2.87868 4.87868C3.75736 4 5.17157 4 8 4H16C18.8284 4 20.2426 4 21.1213 4.87868C22 5.75736 22 7.17157 22 10H2ZM2 14H22C22 16.8284 22 18.2426 21.1213 19.1213C20.2426 20 18.8284 20 16 20H8C5.17157 20 3.75736 20 2.87868 19.1213C2 18.2426 2 16.8284 2 14Z" fill="currentColor" fill-opacity="0.5"/><path d="M6 16H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="btn-info">
+                <span class="btn-title">VNPAY QR</span>
+                <span class="btn-desc">Quét mã nhanh chóng</span>
+              </div>
+            </button>
+
+            <button id="pay-wallet" class="payment-btn btn-wallet">
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 12V17C20 18.8856 20 19.8284 19.4142 20.4142C18.8284 21 17.8856 21 16 21H8C6.11438 21 5.17157 21 4.58579 20.4142C4 19.8284 4 18.8856 4 17V7C4 5.11438 4 4.17157 4.58579 3.58579C5.17157 3 6.11438 3 8 3H16C17.8856 3 18.8284 3 19.4142 3.58579C20 4.17157 20 5.11438 20 7V9" stroke="currentColor" stroke-width="2"/><path d="M18 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 9H22V15H18V9Z" fill="currentColor"/></svg>
+              </div>
+              <div class="btn-info">
+                <span class="btn-title">Ví PrimeShop</span>
+                <span class="btn-desc">Thanh toán 1 chạm</span>
+              </div>
+              <span class="badge-discount">Khuyên dùng</span>
+            </button>
+
+            <button id="pay-momo" class="payment-btn btn-momo">
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/><path d="M8 12H16M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="btn-info">
+                <span class="btn-title">MoMo</span>
+                <span class="btn-desc">Ví điện tử quốc dân</span>
+              </div>
+            </button>
+
+            <button id="pay-paypal" class="payment-btn btn-paypal">
+              <div class="btn-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10C3 6.22876 3 4.34315 4.17157 3.17157C5.34315 2 7.22876 2 11 2H13C16.7712 2 18.6569 2 19.8284 3.17157C21 4.34315 21 6.22876 21 10V14C21 17.7712 21 19.6569 19.8284 20.8284C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8284C3 19.6569 3 17.7712 3 14V10Z" stroke="currentColor" stroke-width="2"/><path d="M8 12H16M16 12L13 9M16 12L13 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="btn-info">
+                <span class="btn-title">PayPal / Visa</span>
+                <span class="btn-desc">Thẻ quốc tế</span>
+              </div>
+            </button>
+
+          </div>
         </div>
-        <style>
-            .swal-payment-btn { width: 100%; padding: 12px; border: 1px solid #ddd; background: #fff; border-radius: 8px; cursor: pointer; }
-            .swal-payment-btn:hover { background: #f0f9ff; border-color: #2563EB; color: #2563EB; }
-            .wallet { background: #1E3A8A; color: white; } .wallet:hover { opacity: 0.9; color: white; }
-        </style>
       `,
       showConfirmButton: false,
       showCloseButton: true,
+      focusConfirm: false,
+      // Logic xử lý sự kiện click
       didOpen: () => {
         const orderId = order.orderId;
         document.getElementById('pay-vnpay')?.addEventListener('click', () => { handleVnPayPayOrder(orderId, amountToPay); Swal.close(); });

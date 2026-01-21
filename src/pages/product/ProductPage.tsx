@@ -38,7 +38,7 @@ const ProductsPage: React.FC = () => {
   const accessoryBrands = ["sony", "jbl", "anker", "logitech", "razer", "corsair", "apple", "samsung"];
   const tabletBrands = ["apple", "samsung", "lenovo", "xiaomi", "huawei"];
   const keyboardBrands = ["logitech", "razer", "corsair", "hyperx", "akko", "dareu","magicapple"];
-  const mouseBrands = ["logitech", "hyperx", "dareu","applemouse", "asus", "zadez", "rapoo", "msi", "corsair", "akko"];
+  const mouseBrands = ["logitech", "hyperx", "dareu","apple mouse", "asus", "zadez", "rapoo", "msi", "corsair", "akko"];
   const headsetBrands = ["sony", "jbl", "logitech", "edifier", "hyperx", "apple", "marshall"];
   // Danh sách tổng hợp mặc định (Lấy đại diện mỗi loại một ít)
   const defaultBrands = ["apple", "asus", "hyperx", "zadez","rapoo","msi"];

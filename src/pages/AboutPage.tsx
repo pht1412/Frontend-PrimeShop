@@ -92,9 +92,9 @@ const PageAbout: React.FC = () => {
           <div className="timeline-item">
             <div className="timeline-dot"></div>
             <div className="timeline-content">
-              <span className="timeline-year">2015</span>
+              <span className="timeline-year">Tháng 3 2025</span>
               <h3>Khởi Đầu</h3>
-              <p>Thành lập cửa hàng đầu tiên tại Quận 10, TP.HCM với 5 thành viên.</p>
+              <p>Thành lập đội ngũ phát triển và tiến hành xây dựng nền tảng công nghệ đầu tiên.</p>
             </div>
           </div>
 
@@ -102,9 +102,9 @@ const PageAbout: React.FC = () => {
           <div className="timeline-item">
             <div className="timeline-dot"></div>
             <div className="timeline-content">
-              <span className="timeline-year">2018</span>
+              <span className="timeline-year">Tháng 5 2025</span>
               <h3>Mở Rộng</h3>
-              <p>Phát triển mạng lưới lên 10 chi nhánh tại TP.HCM và Hà Nội.</p>
+              <p>Trình bày sản phẩm đầu tiên, đạt mức độ hoàn thiện cơ bản cho nền tảng công nghệ.</p>
             </div>
           </div>
 
@@ -112,7 +112,7 @@ const PageAbout: React.FC = () => {
           <div className="timeline-item">
             <div className="timeline-dot"></div>
             <div className="timeline-content">
-              <span className="timeline-year">2021</span>
+              <span className="timeline-year">Tháng 7 2025</span>
               <h3>Chuyển Đổi Số</h3>
               <p>Ra mắt Website TMĐT, phục vụ khách hàng online toàn quốc.</p>
             </div>
@@ -122,9 +122,9 @@ const PageAbout: React.FC = () => {
           <div className="timeline-item">
             <div className="timeline-dot"></div>
             <div className="timeline-content">
-              <span className="timeline-year">2024</span>
+              <span className="timeline-year">Tháng 12 2025</span>
               <h3>Vươn Tầm</h3>
-              <p>Đạt mốc 50 cửa hàng, Top 10 nhà bán lẻ xuất sắc nhất Việt Nam.</p>
+              <p>Hưởng ứng kỷ nguyên vươn mình, mở rộng quy mô dự án</p>
             </div>
           </div>
 

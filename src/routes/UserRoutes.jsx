@@ -30,6 +30,7 @@ import C2CProductDetailPage from "../pages/productC2C/C2CProductDetailPage";
 // import Chatbot from "../components/chat/Chatbot";
 import PrimeShopChat from "../components/chat/ChatC2C";
 import ContactWidget from "../components/contact-widget/ContactWidget";
+import PaymentSuccessPage from "../pages/PaymentSuccessPage";
 
 const UserRoutes = () => {
   return (
@@ -59,6 +60,7 @@ const UserRoutes = () => {
         <Route path="/minigame/:gameId" element={<MinigamePage />} />
         <Route path="/c2c" element={<C2CProduct />} />
         <Route path="/c2c-product-detail/:id" element={<C2CProductDetailPage />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
       </Routes>
       <Footer />
       {/* <Chatbot /> */}
