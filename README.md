@@ -1,14 +1,8 @@
 
 🎨 PrimeShop - Frontend (React + Vite)
 📝 Giới thiệu
-Đây là mã nguồn mặt trước (Frontend) của hệ thống thương mại điện tử PrimeShop. Giao diện được thiết kế với mục tiêu tối ưu hóa trải nghiệm mua sắm, tốc độ phản hồi nhanh và tương thích tốt trên nhiều thiết bị.
+Đây là mã nguồn Frontend của hệ thống thương mại điện tử PrimeShop. Giao diện được thiết kế với mục tiêu tối ưu hóa trải nghiệm mua sắm, tốc độ phản hồi nhanh và tương thích tốt trên nhiều thiết bị.
 Dự án kết nối trực tiếp với PrimeShop Backend API để xử lý dữ liệu thực tế.
-
-👨‍💼 Quản trị & Định hướng (Project Manager Perspective)
-Với vai trò Project Manager & Tech Lead, tôi đã định hướng phát triển Front-end dựa trên các tiêu chí:
-Kiến trúc Component: Chia nhỏ UI thành các Atomic Components để tái sử dụng tối đa, giảm thiểu trùng lặp code.
-Quy trình Agile: Thực hiện review giao diện sau mỗi Sprint 2 tuần để điều chỉnh UX dựa trên phản hồi của các thành viên.
-Tối ưu hóa: Sử dụng Vite để rút ngắn thời gian build dự án và Tailwind CSS để kiểm soát style nhất quán toàn hệ thống.
 
 ✨ Tính năng giao diện nổi bật
 [x] Responsive Design: Giao diện hiển thị tốt trên cả Desktop và Mobile.
