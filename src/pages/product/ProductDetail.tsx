@@ -10,6 +10,8 @@ import { Review } from "../../types/review";
 import { Button, Card, CardContent, TextField } from "@mui/material";
 import StarRatings from 'react-star-ratings';
 import Swal from "sweetalert2";
+import { mockProductDetail, mockImages, mockReviews } from "../../mocks/productDetailMock";
+
 
 const mockPromotions = [
   "🎁 Giảm ngay 500.000đ khi thanh toán qua Momo.",
@@ -33,8 +35,14 @@ const ProductDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await api.get(`/product/product-detail/${slug}`);
-        setProduct(res.data);
+        // const res = await api.get(`/product/product-detail/${slug}`);
+        // setProduct(res.data);
+        // setLoading(true);
+        
+          // CHỈ DÙNG MOCK – KHÔNG GỌI API (test xong thì xóa đoạn này đi)
+        setProduct(mockProductDetail);
+        setProductImages(mockImages);
+        setReviews(mockReviews);
         setLoading(true);
       } catch (err) {
         setLoading(false);
@@ -43,22 +51,23 @@ const ProductDetailPage: React.FC = () => {
       }
     };
 
+    //tắt comment khi test xong
     const fetchProductImages = async () => {
-      try {
-        const res = await api.get(`/product/images/${slug}`);
-        setProductImages(res.data);
-      } catch (err) {
-        console.log("Lỗi khi lấy hình ảnh sản phẩm:", err);
-      }
+      // try {
+      //   const res = await api.get(`/product/images/${slug}`);
+      //   setProductImages(res.data);
+      // } catch (err) {
+      //   console.log("Lỗi khi lấy hình ảnh sản phẩm:", err);
+      // }
     };
 
     const fetchReviews = async () => {
-      try {
-        const res = await api.get('/review', { params: { productSlug: slug } });
-        setReviews(res.data);
-      } catch (err) {
-        console.log("Lỗi khi lấy đánh giá:", err);
-      }
+      // try {
+      //   const res = await api.get('/review', { params: { productSlug: slug } });
+      //   setReviews(res.data);
+      // } catch (err) {
+      //   console.log("Lỗi khi lấy đánh giá:", err);
+      // }
     };
     fetchProduct();
     fetchProductImages();
@@ -141,9 +150,8 @@ const ProductDetailPage: React.FC = () => {
               {productImages.slice(0, 3).map((image, index) => (
                 <button
                   key={image}
-                  className={`${styles.thumbnailButton} ${
-                    currentImageIndex === index ? styles.thumbnailActive : ""
-                  }`}
+                  className={`${styles.thumbnailButton} ${currentImageIndex === index ? styles.thumbnailActive : ""
+                    }`}
                   onClick={() => handleImageChange(index)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -189,13 +197,29 @@ const ProductDetailPage: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className={styles.promotions}>
-            <h3>🎉 Khuyến mãi khi mua hàng</h3>
-            <ul>
-              {mockPromotions.map((promo) => (
-                <li key={promo}>{promo}</li>
-              ))}
-            </ul>
+          {/* Thông tin shop */}
+          <div className={styles.shopInfo}>
+            <h3>🏪 Thông tin Shop</h3>
+
+            <div className={styles.shopBox}>
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/3106/3106921.png"
+                alt="Shop Avatar"
+                className={styles.shopAvatar}
+              />
+
+              <div className={styles.shopDetail}>
+                <p className={styles.shopName}>
+                  Cửa hàng: <strong>Shop Chính Hãng</strong>
+                </p>
+                <p className={styles.shopStatus}>Đã bán hơn 10K sản phẩm</p>
+                <p className={styles.onlineStatus}>💬 Online 5 phút trước</p>
+              </div>
+
+              <button className={styles.chatButton}>
+                Nhắn tin cho shop
+              </button>
+            </div>
           </div>
         </section>
         <section className={styles.productDetails}>

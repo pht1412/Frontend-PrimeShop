@@ -1,3 +1,7 @@
+* {
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
 /* ===== ACCOUNT PAGE ===== */
 .account-page {
   padding: 2.5rem 0;

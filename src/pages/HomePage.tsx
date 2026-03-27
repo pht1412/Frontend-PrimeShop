@@ -6,7 +6,7 @@ import { mockProducts, mockNews } from "../mocks/mockData";
 import { Product } from "../types/product";
 import api from "../api/api";
 import { News } from "../types/news";
-import C2CFeaturedSection from '../components/productC2C-card/C2CFeaturedSection'; // <--- BỔ SUNG DÒNG NÀY
+// import C2CFeaturedSection from '../components/productC2C-card/C2CFeaturedSection'; // <--- BỔ SUNG DÒNG NÀY
 
 const HomePage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(2 * 60 * 60); // 2 giờ
@@ -100,7 +100,7 @@ const HomePage: React.FC = () => {
     className="floating-banner left-fixed"
   />
   <img
-    src="public/banners/banner-right.png"
+    src="/public/banners/banner-right.png"
     alt="Banner phải"
     className="floating-banner right-fixed"
   />
@@ -171,7 +171,7 @@ const HomePage: React.FC = () => {
 
 
       {/* Giao diện C2C */}
-      <C2CFeaturedSection />
+      {/* <C2CFeaturedSection /> */}
 
       
 

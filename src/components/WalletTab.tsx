@@ -118,6 +118,9 @@ const WalletTab: React.FC<WalletTabProps> = ({ user }) => {
    },
    willClose: () => {
     clearInterval(timerInterval);
+
+    // 🔥 Gọi lại API load số dư sau khi nạp xong
+    if (user) fetchWalletData(Number(user.id));
    }
   });
  };
